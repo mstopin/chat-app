@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+yarn workspace @chat-app/backend lint && yarn workspace @chat-app/backend format
