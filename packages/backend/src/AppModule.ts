@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { UserModule } from './user';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -16,10 +18,12 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
           username: configService.getOrThrow<string>('DB_USER'),
           password: configService.getOrThrow<string>('DB_PASS'),
           database: configService.getOrThrow<string>('DB_NAME'),
-          entities: [],
+          entities: [`${__dirname}/**/entities/*.{js,ts}`],
+          migrations: [`${__dirname}/database/migrations/*.{js,ts}`],
         };
       },
     }),
+    UserModule,
   ],
 })
 export class AppModule {}
