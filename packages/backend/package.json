@@ -13,7 +13,8 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.6",
-    "typeorm": "^0.3.9"
+    "typeorm": "^0.3.9",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.1.2",
@@ -22,6 +23,7 @@
     "@types/express": "^4.17.13",
     "@types/jest": "^29.0.0",
     "@types/node": "^18.7.15",
+    "@types/uuid": "^8.3.4",
     "jest": "^29.0.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1"
