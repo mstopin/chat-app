@@ -9,6 +9,13 @@ import {
 
 @Entity({ name: 'users' })
 export class User {
+  constructor(id?: string, email?: string, password?: string) {
+    this.id = id as string;
+    this.email = email as string;
+    this.password = password as string;
+    this.created_at = new Date();
+  }
+
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -22,8 +29,8 @@ export class User {
   created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updated_at: Date | null;
 
   @DeleteDateColumn()
-  deleted_at: Date;
+  deleted_at: Date | null;
 }
