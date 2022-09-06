@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 
-import { AppModule } from './app';
+import { AppModule } from './AppModule';
 
 (async function boostrap() {
   const app = await NestFactory.create(AppModule);
