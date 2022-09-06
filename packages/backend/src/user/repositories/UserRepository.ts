@@ -16,3 +16,5 @@ export interface UserRepository
   extends EntityRepository<User, CreateUserDTO, UpdateUserDTO> {
   findByEmail: (email: string) => Promise<User | null>;
 }
+
+export const USER_REPOSITORY_TOKEN = Symbol.for('UserRepository');

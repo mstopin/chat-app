@@ -7,7 +7,7 @@ import { UserRepository, CreateUserDTO, UpdateUserDTO } from './UserRepository';
 
 @Injectable()
 export class InMemoryUserRepository implements UserRepository {
-  private users: User[] = [];
+  users: User[] = [];
 
   async find() {
     return Promise.resolve(this.users);
