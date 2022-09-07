@@ -14,9 +14,14 @@ export class UserService {
     @Inject(USER_REPOSITORY_TOKEN) private userRepository: UserRepository
   ) {}
 
+  async findByEmail(email: string) {
+    const exactEmailUser = await this.userRepository.findByEmail(email);
+    return exactEmailUser;
+  }
+
   async registerUser(registerUserDTO: RegisterUserDTO) {
     const { email, password } = registerUserDTO;
-    const exactEmailUser = await this.userRepository.findByEmail(email);
+    const exactEmailUser = await this.findByEmail(email);
     if (exactEmailUser) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
