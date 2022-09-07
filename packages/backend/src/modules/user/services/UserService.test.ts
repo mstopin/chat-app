@@ -24,6 +24,14 @@ describe('UserService', () => {
     );
   });
 
+  it('can find user by email', async () => {
+    userRepository.users.push(new User('id', 'email', 'password'));
+
+    const user = (await userService.findByEmail('email')) as User;
+    expect(user.id).toBe('id');
+    expect(user.email).toBe('email');
+  });
+
   it('can register user if email is not registered', async () => {
     const user = await userService.registerUser({
       email: 'email',
