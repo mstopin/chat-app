@@ -41,14 +41,8 @@ describe('UserService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         UserService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: userRepositoryMock,
-        },
-        {
-          provide: HashingService,
-          useClass: PassthroughHashingService,
-        },
+        { provide: getRepositoryToken(User), useValue: userRepositoryMock },
+        { provide: HashingService, useClass: PassthroughHashingService },
       ],
     }).compile();
 
