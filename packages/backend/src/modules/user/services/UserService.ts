@@ -1,21 +1,20 @@
-import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
 
-import {
-  UserRepository,
-  USER_REPOSITORY_TOKEN,
-} from '../repositories/UserRepository';
+import { User } from '../entities/User';
 
 import { RegisterUserDTO } from './dtos/RegisterUserDTO';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(USER_REPOSITORY_TOKEN) private userRepository: UserRepository
+    @InjectRepository(User) private userRepository: Repository<User>
   ) {}
 
   async findByEmail(email: string) {
-    const exactEmailUser = await this.userRepository.findByEmail(email);
+    const exactEmailUser = await this.userRepository.findOneBy({ email });
     return exactEmailUser;
   }
 
@@ -27,7 +26,7 @@ export class UserService {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const registeredUser = await this.userRepository.create({
+    const registeredUser = await this.userRepository.save({
       email,
       password: passwordHash,
     });

@@ -29,8 +29,8 @@ export class User {
   created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: Date | null;
+  updated_at?: Date | null;
 
   @DeleteDateColumn()
-  deleted_at: Date | null;
+  deleted_at?: Date | null;
 }
