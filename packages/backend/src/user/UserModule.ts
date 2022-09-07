@@ -5,6 +5,7 @@ import { User } from './entities/User';
 import { UserService } from './services/UserService';
 import { USER_REPOSITORY_TOKEN } from './repositories/UserRepository';
 import { TypeOrmUserRepository } from './repositories/TypeOrmUserRepository';
+import { UserController } from './controllers/UserController';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -15,5 +16,6 @@ import { TypeOrmUserRepository } from './repositories/TypeOrmUserRepository';
       useClass: TypeOrmUserRepository,
     },
   ],
+  controllers: [UserController],
 })
 export class UserModule {}
