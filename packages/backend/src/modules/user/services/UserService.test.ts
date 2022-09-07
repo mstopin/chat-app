@@ -1,57 +1,76 @@
 import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { USER_REPOSITORY_TOKEN } from '../repositories/UserRepository';
-import { InMemoryUserRepository } from '../repositories/InMemoryUserRepository';
 import { User } from '../entities/User';
 
 import { UserService } from './UserService';
 
+type UserRepositoryMock = {
+  [K in keyof Partial<Repository<User>>]?: jest.Mock;
+};
+
+const createUserRepositoryMock: () => UserRepositoryMock = () => ({
+  findOneBy: jest.fn(({ email }: { email?: string }) => {
+    if (email && email === 'email') {
+      return new User('id', 'email', 'password');
+    }
+    return null;
+  }),
+  save: jest.fn(({ email, password }: { email: string; password: string }) => {
+    return {
+      id: 'id',
+      email,
+      password,
+    };
+  }),
+});
+
 describe('UserService', () => {
+  let userRepositoryMock: UserRepositoryMock;
   let userService: UserService;
-  let userRepository: InMemoryUserRepository;
 
   beforeEach(async () => {
+    userRepositoryMock = createUserRepositoryMock();
+
     const moduleRef = await Test.createTestingModule({
       providers: [
         UserService,
-        { provide: USER_REPOSITORY_TOKEN, useClass: InMemoryUserRepository },
+        {
+          provide: getRepositoryToken(User),
+          useValue: userRepositoryMock,
+        },
       ],
     }).compile();
 
     userService = moduleRef.get<UserService>(UserService);
-    userRepository = moduleRef.get<InMemoryUserRepository>(
-      USER_REPOSITORY_TOKEN
-    );
   });
 
   it('can find user by email', async () => {
-    userRepository.users.push(new User('id', 'email', 'password'));
-
     const user = (await userService.findByEmail('email')) as User;
+
     expect(user.id).toBe('id');
     expect(user.email).toBe('email');
+    expect(user.password).toBe('password');
   });
 
   it('can register user if email is not registered', async () => {
     const user = await userService.registerUser({
-      email: 'email',
-      password: 'password',
+      email: 'email2',
+      password: 'password2',
     });
 
-    expect(userRepository.users.length).toBe(1);
-    expect(userRepository.users[0]?.id).toBe(user.id);
-    expect(userRepository.users[0]?.email).toBe(user.email);
-    expect(userRepository.users[0]?.password).toBe(user.password);
+    expect(user.id).toBe('id');
+    expect(user.email).toBe('email2');
+    expect(user.password).toEqual(expect.any(String));
   });
 
   it('cannot register user if email is already registered', async () => {
-    userRepository.users.push(new User('id', 'email', 'password'));
-
-    await expect(
-      userService.registerUser({
+    await expect(async () => {
+      await userService.registerUser({
         email: 'email',
         password: 'password',
-      })
-    ).rejects.toThrow('User already exists');
+      });
+    }).rejects.toThrow('User already exists');
   });
 });
