@@ -1,4 +1,4 @@
-import { EntityRepository } from '../../common/repositories/EntityRepository';
+import { EntityRepository } from '../../../common/repositories/EntityRepository';
 
 import { User } from '../entities/User';
 
