@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { HashingModule } from './common/modules/HashingModule';
+
 import { UserModule } from './modules/user';
 import { AuthModule } from './modules/auth';
 
@@ -24,6 +26,7 @@ import { AuthModule } from './modules/auth';
         };
       },
     }),
+    HashingModule,
     UserModule,
     AuthModule,
   ],
