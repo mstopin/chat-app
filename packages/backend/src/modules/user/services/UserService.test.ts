@@ -2,6 +2,11 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import {
+  HashingService,
+  PassthroughHashingService,
+} from '../../../common/modules/HashingModule';
+
 import { User } from '../entities/User';
 
 import { UserService } from './UserService';
@@ -40,6 +45,10 @@ describe('UserService', () => {
           provide: getRepositoryToken(User),
           useValue: userRepositoryMock,
         },
+        {
+          provide: HashingService,
+          useClass: PassthroughHashingService,
+        },
       ],
     }).compile();
 
@@ -62,7 +71,7 @@ describe('UserService', () => {
 
     expect(user.id).toBe('id');
     expect(user.email).toBe('email2');
-    expect(user.password).toEqual(expect.any(String));
+    expect(user.password).toEqual('password2');
   });
 
   it('cannot register user if email is already registered', async () => {
