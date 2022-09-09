@@ -18,17 +18,31 @@ type UserRepositoryMock = {
 const createUserRepositoryMock: () => UserRepositoryMock = () => ({
   findOneBy: jest.fn(({ email }: { email?: string }) => {
     if (email && email === 'email') {
-      return new User('id', 'email', 'password');
+      return new User('id', 'email', 'password', 'name', 'surname');
     }
     return null;
   }),
-  save: jest.fn(({ email, password }: { email: string; password: string }) => {
-    return {
-      id: 'id',
+  save: jest.fn(
+    ({
       email,
       password,
-    };
-  }),
+      name,
+      surname,
+    }: {
+      email: string;
+      password: string;
+      name: string;
+      surname: string;
+    }) => {
+      return {
+        id: 'id',
+        email,
+        password,
+        name,
+        surname,
+      };
+    }
+  ),
 });
 
 describe('UserService', () => {
@@ -61,6 +75,8 @@ describe('UserService', () => {
     const user = await userService.registerUser({
       email: 'email2',
       password: 'password2',
+      name: 'name',
+      surname: 'surname',
     });
 
     expect(user.id).toBe('id');
@@ -73,6 +89,8 @@ describe('UserService', () => {
       await userService.registerUser({
         email: 'email',
         password: 'password',
+        name: 'name',
+        surname: 'surname',
       });
     }).rejects.toThrow('User already exists');
   });
