@@ -14,14 +14,8 @@ import { Channel } from '../entities/Channel';
 
 import { ChannelService } from './ChannelService';
 
-const users: User[] = [
-  new User('user-id-1', 'email-1', 'password-1', 'name-1', 'surname-1'),
-  new User('user-id-2', 'email-2', 'password-2', 'name-2', 'surname-2'),
-];
-
-const channels: Channel[] = [
-  new Channel('channel-id-1', users[0], 'name-1', null, []),
-];
+let users: User[];
+let channels: Channel[];
 
 type UserServiceMock = {
   [K in keyof Partial<UserService>]?: jest.Mock;
@@ -55,6 +49,12 @@ describe('ChannelService', () => {
   let channelService: ChannelService;
 
   beforeEach(async () => {
+    users = [
+      new User('user-id-1', 'email-1', 'password-1', 'name-1', 'surname-1'),
+      new User('user-id-2', 'email-2', 'password-2', 'name-2', 'surname-2'),
+    ];
+    channels = [new Channel('channel-id-1', users[0], 'name-1', null, [])];
+
     userServiceMock = createUserServiceMock();
     channelRepositoryMock = createChannelRepositoryMock();
     hashingService = new PassthroughHashingService();
@@ -200,6 +200,7 @@ describe('ChannelService', () => {
       expect(channelRepositoryMock.findOne).toHaveBeenCalledWith({
         relations: {
           owner: true,
+          members: false,
         },
         where: {
           id: 'channel-id-1',
@@ -226,6 +227,146 @@ describe('ChannelService', () => {
       await expect(async () => {
         await deleteChannel('user-id-2', 'channel-id-1');
       }).rejects.toThrow('You do not own this channel');
+    });
+  });
+
+  describe('join', () => {
+    const joinChannel = async (userId: string, channelId: string) => {
+      await channelService.join({
+        userId,
+        channelId,
+      });
+    };
+
+    it('check if user exists', async () => {
+      await joinChannel('user-id-2', 'channel-id-1');
+
+      expect(userServiceMock.findById).toHaveBeenCalledTimes(1);
+      expect(userServiceMock.findById).toHaveBeenCalledWith('user-id-2');
+    });
+
+    it('throws if user does not exist', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-3', 'channel-id-1');
+      }).rejects.toThrow('User does not exist');
+    });
+
+    it('checks if channel exists', async () => {
+      await joinChannel('user-id-2', 'channel-id-1');
+
+      expect(channelRepositoryMock.findOne).toHaveBeenCalledTimes(1);
+      expect(channelRepositoryMock.findOne).toHaveBeenCalledWith({
+        relations: {
+          owner: true,
+          members: true,
+        },
+        where: {
+          id: 'channel-id-1',
+        },
+      });
+    });
+
+    it('throws if channel does not exist', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-2', 'channel-id-2');
+      }).rejects.toThrow('Channel does not exist');
+    });
+
+    it('adds new user to channel', async () => {
+      await joinChannel('user-id-2', 'channel-id-1');
+
+      expect(channelRepositoryMock.save).toHaveBeenCalledTimes(1);
+      expect(channelRepositoryMock.save).toHaveBeenCalledWith({
+        ...channels[0],
+        members: [users[1]],
+      });
+    });
+
+    it('throws if user has already joined the channel', async () => {
+      channels[0]?.members.push(users[1] as User);
+
+      await expect(async () => {
+        await joinChannel('user-id-2', 'channel-id-1');
+      }).rejects.toThrow('You have already joined this channel');
+    });
+
+    it('throws if owner tries to join their own channel', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-1', 'channel-id-1');
+      }).rejects.toThrow('You cannot join your own channel');
+    });
+  });
+
+  describe('leave', () => {
+    const leaveChannel = async (userId: string, channelId: string) => {
+      await channelService.leave({
+        userId,
+        channelId,
+      });
+    };
+
+    beforeEach(() => {
+      channels[0]?.members.push(users[1] as User);
+    });
+
+    it('checks if user exists', async () => {
+      await leaveChannel('user-id-2', 'channel-id-1');
+
+      expect(userServiceMock.findById).toHaveBeenCalledTimes(1);
+      expect(userServiceMock.findById).toHaveBeenCalledWith('user-id-2');
+    });
+
+    it('throws if user does not exist', async () => {
+      await expect(async () => {
+        await leaveChannel('user-id-3', 'channel-id-1');
+      }).rejects.toThrow('User does not exist');
+    });
+
+    it('checks if channel exists', async () => {
+      await leaveChannel('user-id-2', 'channel-id-1');
+
+      expect(channelRepositoryMock.findOne).toHaveBeenCalledTimes(1);
+      expect(channelRepositoryMock.findOne).toHaveBeenCalledWith({
+        relations: {
+          owner: true,
+          members: true,
+        },
+        where: {
+          id: 'channel-id-1',
+        },
+      });
+    });
+
+    it('throws if channel does not exist', async () => {
+      await expect(async () => {
+        await leaveChannel('user-id-2', 'channel-id-2');
+      }).rejects.toThrow('Channel does not exist');
+    });
+
+    it('removes user from channel', async () => {
+      await leaveChannel('user-id-2', 'channel-id-1');
+
+      expect(channelRepositoryMock.save).toHaveBeenCalledTimes(1);
+      expect(channelRepositoryMock.save).toHaveBeenCalledWith({
+        ...channels[0],
+        members: [],
+      });
+    });
+
+    it('throws if user is not a member of the channel', async () => {
+      channels[0]!.members = [];
+
+      await expect(async () => {
+        await leaveChannel('user-id-2', 'channel-id-1');
+      }).rejects.toThrow('You are not a member of this channel');
+    });
+
+    it('throws if owner tries to leave their own channel', async () => {
+      await expect(async () => {
+        await leaveChannel('user-id-1', 'channel-id-1');
+      }).rejects.toThrow(
+        'You cannot leave your own channel. Delete it instead.'
+      );
     });
   });
 });
