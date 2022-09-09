@@ -16,8 +16,8 @@ type UserRepositoryMock = {
 };
 
 const createUserRepositoryMock: () => UserRepositoryMock = () => ({
-  findOneBy: jest.fn(({ email }: { email?: string }) => {
-    if (email && email === 'email') {
+  findOneBy: jest.fn(({ id, email }: { id?: string; email?: string }) => {
+    if (id === 'id' || email === 'email') {
       return new User('id', 'email', 'password', 'name', 'surname');
     }
     return null;
@@ -61,6 +61,14 @@ describe('UserService', () => {
     }).compile();
 
     userService = moduleRef.get<UserService>(UserService);
+  });
+
+  it('can find user by id', async () => {
+    const user = (await userService.findById('id')) as User;
+
+    expect(user.id).toBe('id');
+    expect(user.email).toBe('email');
+    expect(user.password).toBe('password');
   });
 
   it('can find user by email', async () => {
