@@ -9,10 +9,18 @@ import {
 
 @Entity({ name: 'users' })
 export class User {
-  constructor(id?: string, email?: string, password?: string) {
+  constructor(
+    id?: string,
+    email?: string,
+    password?: string,
+    name?: string,
+    surname?: string
+  ) {
     this.id = id as string;
     this.email = email as string;
     this.password = password as string;
+    this.name = name as string;
+    this.surname = surname as string;
     this.created_at = new Date();
   }
 
@@ -24,6 +32,12 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  surname: string;
 
   @CreateDateColumn()
   created_at: Date;

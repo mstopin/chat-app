@@ -21,7 +21,7 @@ export class UserService {
   }
 
   async registerUser(registerUserDTO: RegisterUserDTO) {
-    const { email, password } = registerUserDTO;
+    const { email, password, name, surname } = registerUserDTO;
     const exactEmailUser = await this.findByEmail(email);
     if (exactEmailUser) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
@@ -31,6 +31,8 @@ export class UserService {
     const registeredUser = await this.userRepository.save({
       email,
       password: passwordHash,
+      name,
+      surname,
     });
 
     return registeredUser;

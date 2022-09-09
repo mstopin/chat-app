@@ -10,13 +10,17 @@ export class UserController {
 
   @Post('/register')
   async register(@Body() registerUserRequest: RegisterUserRequest) {
-    const { email, password } = registerUserRequest;
+    const { email, password, name, surname } = registerUserRequest;
     const user = await this.userService.registerUser({
       email,
       password,
+      name,
+      surname,
     });
     return {
       email: user.email,
+      name: user.name,
+      surname: user.surname,
     };
   }
 }
