@@ -15,9 +15,12 @@ export class UserService {
     private hashingService: HashingService
   ) {}
 
+  async findById(id: string) {
+    return await this.userRepository.findOneBy({ id });
+  }
+
   async findByEmail(email: string) {
-    const exactEmailUser = await this.userRepository.findOneBy({ email });
-    return exactEmailUser;
+    return await this.userRepository.findOneBy({ email });
   }
 
   async registerUser(registerUserDTO: RegisterUserDTO) {
