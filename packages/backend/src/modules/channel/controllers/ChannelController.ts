@@ -26,7 +26,10 @@ export class ChannelController {
 
   @Get()
   async getChannels() {
-    const channels = await this.channelService.findAll({ withOwner: true });
+    const channels = await this.channelService.findAll({
+      withOwner: true,
+      withMembers: true,
+    });
     return channels.map((channel) => ChannelResponse.from(channel));
   }
 
@@ -54,5 +57,33 @@ export class ChannelController {
       ownerId: userId,
       channelId,
     });
+  }
+
+  @Post('/:channelId/join')
+  async joinChannel(
+    @UserId() userId: string,
+    @Param('channelId') channelId: string
+  ) {
+    await this.channelService.join({
+      userId,
+      channelId,
+    });
+    return {
+      success: true,
+    };
+  }
+
+  @Post('/:channelId/leave')
+  async leaveChannel(
+    @UserId() userId: string,
+    @Param('channelId') channelId: string
+  ) {
+    await this.channelService.leave({
+      userId,
+      channelId,
+    });
+    return {
+      success: true,
+    };
   }
 }
