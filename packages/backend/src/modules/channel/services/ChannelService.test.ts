@@ -53,7 +53,7 @@ describe('ChannelService', () => {
       new User('user-id-1', 'email-1', 'password-1', 'name-1', 'surname-1'),
       new User('user-id-2', 'email-2', 'password-2', 'name-2', 'surname-2'),
     ];
-    channels = [new Channel('channel-id-1', users[0], 'name-1', null, [])];
+    channels = [new Channel('channel-id-1', users[0], 'name-1', null, [], [])];
 
     userServiceMock = createUserServiceMock();
     channelRepositoryMock = createChannelRepositoryMock();
@@ -201,6 +201,7 @@ describe('ChannelService', () => {
         relations: {
           owner: true,
           members: false,
+          messages: false,
         },
         where: {
           id: 'channel-id-1',
@@ -259,6 +260,7 @@ describe('ChannelService', () => {
         relations: {
           owner: true,
           members: true,
+          messages: false,
         },
         where: {
           id: 'channel-id-1',
@@ -330,6 +332,7 @@ describe('ChannelService', () => {
         relations: {
           owner: true,
           members: true,
+          messages: false,
         },
         where: {
           id: 'channel-id-1',
