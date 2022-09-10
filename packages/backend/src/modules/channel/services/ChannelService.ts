@@ -1,6 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
@@ -13,6 +12,7 @@ import { UserService } from '../../user/services/UserService';
 
 import { Channel } from '../entities/Channel';
 
+import { BaseChannelService } from './BaseChannelService';
 import { CreateChannelDTO } from './dtos/CreateChannelDTO';
 import { DeleteChannelDTO } from './dtos/DeleteChannelDTO';
 import { JoinChannelDTO } from './dtos/JoinChannelDTO';
@@ -24,51 +24,13 @@ interface FindAllParams {
 }
 
 @Injectable()
-export class ChannelService {
+export class ChannelService extends BaseChannelService {
   constructor(
-    @InjectRepository(Channel) private channelRepository: Repository<Channel>,
-    private userService: UserService,
+    @InjectRepository(Channel) channelRepository: Repository<Channel>,
+    userService: UserService,
     private hashingService: HashingService
-  ) {}
-
-  private async findUserById(userId: string) {
-    const user = await this.userService.findById(userId);
-    if (!user) {
-      throw new NotFoundException('User does not exist');
-    }
-    return user;
-  }
-
-  private async findChannelById(
-    channelId: string,
-    loadOwner = false,
-    loadMembers = false
   ) {
-    const channel = await this.channelRepository.findOne({
-      relations: {
-        owner: loadOwner,
-        members: loadMembers,
-      },
-      where: {
-        id: channelId,
-      },
-    });
-    if (!channel) {
-      throw new NotFoundException('Channel does not exist');
-    }
-    return channel;
-  }
-
-  private async findUserAndChannelById(
-    userId: string,
-    channelId: string,
-    loadOwner = false,
-    loadMembers = false
-  ) {
-    return await Promise.all([
-      this.findUserById(userId),
-      this.findChannelById(channelId, loadOwner, loadMembers),
-    ]);
+    super(channelRepository, userService);
   }
 
   async findAll(params: FindAllParams = {}) {
