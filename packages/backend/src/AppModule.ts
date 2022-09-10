@@ -7,6 +7,7 @@ import { HashingModule } from './common/modules/HashingModule';
 import { UserModule } from './modules/user';
 import { AuthModule } from './modules/auth';
 import { ChannelModule } from './modules/channel';
+import { MessageModule } from './modules/message';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ChannelModule } from './modules/channel';
     UserModule,
     AuthModule,
     ChannelModule,
+    MessageModule,
   ],
 })
 export class AppModule {}
