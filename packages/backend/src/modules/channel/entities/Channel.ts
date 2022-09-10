@@ -9,9 +9,11 @@ import {
   DeleteDateColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from '../../user/entities/User';
+import { Message } from '../../message/entities/Message';
 
 @Entity({ name: 'channels' })
 export class Channel {
@@ -20,13 +22,15 @@ export class Channel {
     owner?: User,
     name?: string,
     password?: string | null,
-    members?: User[]
+    members?: User[],
+    messages?: Message[]
   ) {
     this.id = id as string;
     this.owner = owner as User;
     this.name = name as string;
     this.password = password as string | null;
     this.members = members as User[];
+    this.messages = messages as Message[];
     this.created_at = new Date();
     this.updated_at = null;
     this.deleted_at = null;
@@ -58,6 +62,9 @@ export class Channel {
     },
   })
   members: User[];
+
+  @OneToMany(() => Message, (message) => message.channel)
+  messages: Message[];
 
   @CreateDateColumn()
   created_at: Date;
