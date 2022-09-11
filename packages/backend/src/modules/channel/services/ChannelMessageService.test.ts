@@ -2,30 +2,24 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { MockType } from '../../../common/tests/MockType';
+
 import { User } from '../../user/entities/User';
 import { UserService } from '../../user/services/UserService';
 import { Message } from '../../message/entities/Message';
+import { MessageService } from '../../message/services/MessageService';
 
 import { Channel } from '../entities/Channel';
 
 import { ChannelMessageService } from './ChannelMessageService';
-import { MessageService } from '../../message/services/MessageService';
 
 let users: [User, User, User];
 let channels: [Channel];
 let messages: [Message];
 
-type UserServiceMock = {
-  [K in keyof Partial<UserService>]?: jest.Mock;
-};
-
-type MessageServiceMock = {
-  [K in keyof Partial<MessageService>]?: jest.Mock;
-};
-
-type ChannelRepositoryMock = {
-  [K in keyof Partial<Repository<Channel>>]?: jest.Mock;
-};
+type UserServiceMock = MockType<UserService>;
+type MessageServiceMock = MockType<MessageService>;
+type ChannelRepositoryMock = MockType<Repository<Channel>>;
 
 const createUserServiceMock: () => UserServiceMock = () => ({
   findById: jest.fn((id: string) => {

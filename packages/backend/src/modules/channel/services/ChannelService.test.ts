@@ -6,8 +6,9 @@ import {
   HashingService,
   PassthroughHashingService,
 } from '../../../common/modules/HashingModule';
-import { User } from '../../user/entities/User';
+import { MockType } from '../../../common/tests/MockType';
 
+import { User } from '../../user/entities/User';
 import { UserService } from '../../user/services/UserService';
 
 import { Channel } from '../entities/Channel';
@@ -17,13 +18,8 @@ import { ChannelService } from './ChannelService';
 let users: User[];
 let channels: Channel[];
 
-type UserServiceMock = {
-  [K in keyof Partial<UserService>]?: jest.Mock;
-};
-
-type ChannelRepositoryMock = {
-  [K in keyof Partial<Repository<Channel>>]?: jest.Mock;
-};
+type UserServiceMock = MockType<UserService>;
+type ChannelRepositoryMock = MockType<Repository<Channel>>;
 
 const createUserServiceMock: () => UserServiceMock = () => ({
   findById: jest.fn((id: string) => {
