@@ -39,6 +39,12 @@ import { AppModule } from './AppModule';
     })
   );
 
+  if ((configService.get('NODE_ENV') || 'development') !== 'production') {
+    app.enableCors({
+      origin: '*',
+    });
+  }
+
   const APP_PORT = configService.getOrThrow<number>('APP_PORT');
   await app.listen(APP_PORT);
 })().catch(console.error);
