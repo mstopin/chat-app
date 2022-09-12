@@ -6,7 +6,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./.docker/postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -17,4 +17,8 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ./.docker/redis:/data
+      - redis:/data
+
+volumes:
+  postgres:
+  redis:
