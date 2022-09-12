@@ -20,7 +20,7 @@ import { AppModule } from './AppModule';
   app.use(
     session({
       cookie: {
-        maxAge: 3 * 24 * 3600,
+        maxAge: 3 * 24 * 3600 * 1000,
         sameSite: 'strict',
       },
       secret: SESSION_SECRET,
