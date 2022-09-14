@@ -39,6 +39,8 @@ import { AppModule } from './AppModule';
     })
   );
 
+  app.setGlobalPrefix('/api');
+
   if ((configService.get('NODE_ENV') || 'development') !== 'production') {
     app.enableCors({
       origin: '*',
