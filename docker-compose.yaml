@@ -19,6 +19,12 @@ services:
     volumes:
       - redis:/data
 
+  haproxy:
+    image: haproxy:alpine
+    volumes:
+      - ./docker/haproxy:/usr/local/etc/haproxy
+    network_mode: 'host'
+
 volumes:
   postgres:
   redis:
