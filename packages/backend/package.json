@@ -38,7 +38,7 @@
     "ts-node": "^10.9.1"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo",
     "build": "tsc",
     "start": "node dist/main",
     "start:dev": "nest start --watch -p tsconfig.json",
