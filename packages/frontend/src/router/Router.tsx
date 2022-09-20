@@ -20,6 +20,7 @@ const routes = createRoutesFromElements(
     </Route>
     <Route element={<ProtectedRoutes />}>
       <Route path="/chat" element={<ChatPage />} />
+      <Route path="/chat/:channelId" element={<ChatPage />} />
     </Route>
   </>
 );
