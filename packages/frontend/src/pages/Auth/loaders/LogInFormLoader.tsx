@@ -1,12 +1,12 @@
 import { Suspense, lazy } from 'react';
 
-import Fallback from './Fallback';
+import { FullPageLoader } from '../../../components/FullPageLoader';
 
 const LogInForm = lazy(() => import('../forms/LogInForm'));
 
 export default function LogInFormLoader() {
   return (
-    <Suspense fallback={<Fallback />}>
+    <Suspense fallback={<FullPageLoader />}>
       <LogInForm />
     </Suspense>
   );
