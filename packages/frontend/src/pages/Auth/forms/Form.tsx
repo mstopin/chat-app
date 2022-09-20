@@ -107,7 +107,7 @@ export function FormButton({ text, ...props }: FormButtonProps) {
       w="100%"
       bg="#2F80ED"
       color="white"
-      sx={{ '&:hover': { bg: '#1369DE' } }}
+      sx={{ '&:hover': { bg: '#1369DE !important' } }}
       {...props}
     >
       {text}

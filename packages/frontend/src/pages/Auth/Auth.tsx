@@ -1,26 +1,18 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { Container, Center } from '@chakra-ui/react';
 
-import { useUserStore } from '../../hooks/useUserStore';
+import { useUser } from '../../hooks/useUser';
 
 export default function Auth() {
-  const user = useUserStore((state) => state.user);
-
+  const { user } = useUser();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname === '/auth') {
-      navigate('/auth/login');
-    }
-  }, [location, navigate]);
 
   useEffect(() => {
     if (user) {
       navigate('/chat');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <Container size="sm">

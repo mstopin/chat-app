@@ -1,31 +1,32 @@
-import { useEffect, PropsWithChildren } from 'react';
-import shallow from 'zustand/shallow';
+import { useState, useEffect, PropsWithChildren } from 'react';
+import axios from 'axios';
 
-import { useUserStore } from '../../hooks/useUserStore';
+import { User } from '../../types';
+import { useUser } from '../../hooks/useUser';
+import { FullPageLoader } from '../../components/FullPageLoader';
 
 export default function SessionUserLoader({ children }: PropsWithChildren) {
-  const [user, isLoading, isError, loadSessionUser] = useUserStore(
-    (state) => [
-      state.user,
-      state.isLoading,
-      state.isError,
-      state.loadSessionUser,
-    ],
-    shallow
-  );
+  const { user, setUser } = useUser();
+  const [loadedUser, setLoadedUser] = useState<boolean>(!!user);
 
   useEffect(() => {
-    if (!user && !isLoading && !isError) {
-      loadSessionUser();
-    }
-  }, [user, isLoading, isError]);
+    if (loadedUser) return;
+    (async function loadSessionUser() {
+      try {
+        const [response] = await Promise.all([
+          await axios.get('/api/auth/me'),
+          await new Promise((r) => setTimeout(r, 750)),
+        ]);
+        setUser(response.data as User);
+        setLoadedUser(true);
+      } catch {
+        setLoadedUser(true);
+      }
+    })();
+  }, []);
 
-  if (!isLoading && !user && !isError) {
-    return null;
-  }
-
-  if (isLoading && !user && !isError) {
-    return <p>Loading...</p>;
+  if (!loadedUser) {
+    return <FullPageLoader />;
   }
 
   return <>{children}</>;

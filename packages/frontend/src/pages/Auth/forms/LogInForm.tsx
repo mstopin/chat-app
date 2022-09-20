@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Text } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
-import { useUserStore } from '../../../hooks/useUserStore';
+import { useUser } from '../../../hooks/useUser';
+import { User } from '../../../types';
 
 import {
   Form,
@@ -16,7 +20,8 @@ import {
 
 export default function LogInForm() {
   const [searchParams] = useSearchParams();
-  const logIn = useUserStore((state) => state.logIn);
+  const { setUser } = useUser();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -28,7 +33,19 @@ export default function LogInForm() {
       password: Yup.string().required('Password is required'),
     }),
     onSubmit: async ({ email, password }) => {
-      await logIn(email, password);
+      try {
+        const response = await axios.post('/api/auth/login', {
+          email,
+          password,
+        });
+        setUser(response.data as User);
+      } catch (e: any) {
+        if (e.response.data.statusCode === 401) {
+          setLoginError('Invalid email or password');
+        } else {
+          setLoginError('Could not log in. Try again later.');
+        }
+      }
     },
   });
 
@@ -59,7 +76,18 @@ export default function LogInForm() {
         </>
       )}
       renderFormButton={() => (
-        <FormButton text="Log In" onClick={() => formik.handleSubmit()} />
+        <>
+          <FormButton
+            text="Log In"
+            onClick={() => formik.handleSubmit()}
+            isLoading={formik.isSubmitting}
+          />
+          {!!loginError && (
+            <Text mt={4} color="red.500" textAlign="center" fontWeight="bold">
+              {loginError}
+            </Text>
+          )}
+        </>
       )}
       renderFormChangeText={() => (
         <FormChangeTypeText
