@@ -6,6 +6,8 @@ import theme from './theme';
 
 import { SessionUserLoader } from './utils/SessionUserLoader';
 
+import { UserContextProvider } from './hooks/useUser';
+
 import { Router } from './router';
 
 const container = document.querySelector('#root') as HTMLElement;
@@ -14,9 +16,11 @@ const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <SessionUserLoader>
-        <Router />
-      </SessionUserLoader>
+      <UserContextProvider>
+        <SessionUserLoader>
+          <Router />
+        </SessionUserLoader>
+      </UserContextProvider>
     </ChakraProvider>
   </React.StrictMode>
 );
