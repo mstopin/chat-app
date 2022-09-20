@@ -29,7 +29,11 @@ export default function ChannelsList() {
         />
         <Box p={2}>
           {filteredChannels.map((c) => (
-            <Channel channel={c} key={c.id} />
+            <Channel
+              channel={c}
+              isOwnedByUser={c.owner.id === user!.id}
+              key={c.id}
+            />
           ))}
         </Box>
       </Box>

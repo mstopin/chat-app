@@ -6,13 +6,17 @@ import { Channel as ChannelType } from '../../../../types';
 
 interface ChannelProps {
   channel: ChannelType;
+  isOwnedByUser: boolean;
 }
 
-export default function Channel({ channel }: ChannelProps) {
+export default function Channel({ channel, isOwnedByUser }: ChannelProps) {
   const { channelId: paramChannelId } = useParams();
 
-  const memberCount = channel.members.length + 1; // members + owner
   const isSelected = channel.id === paramChannelId;
+  const memberCount = channel.members.length + 1; // members + owner
+  const ownerText = isOwnedByUser
+    ? 'You'
+    : `${channel.owner.name} ${channel.owner.surname}`;
 
   return (
     <Link to={`/chat/${channel.id}`} style={{ display: 'block' }}>
@@ -31,9 +35,7 @@ export default function Channel({ channel }: ChannelProps) {
               </Text>
             )}
           </Flex>
-          <Text fontSize="sm">
-            Owner: {channel.owner.name}&nbsp;{channel.owner.surname}
-          </Text>
+          <Text fontSize="sm">Owner: {ownerText}</Text>
           <Text fontSize="sm">Members: {memberCount}</Text>
         </Box>
       </Box>
