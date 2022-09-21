@@ -10,6 +10,7 @@ export interface ChannelSlice {
     isLoading: boolean;
   };
   fetchChannels: () => Promise<void>;
+  addChannel: (channel: Channel) => void;
   joinChannel: (channel: Channel, user: User) => void;
   leaveChannel: (channel: Channel, user: User) => void;
 }
@@ -34,6 +35,11 @@ export const createChannelSlice: StateCreator<
     } catch (e: any) {
       set({ channels: { data: null, error: e.message, isLoading: false } });
     }
+  },
+  addChannel: (channel: Channel) => {
+    const channels = get().channels.data ?? [];
+    const updatedChannels = [...channels, channel];
+    set({ channels: { ...get().channels, data: updatedChannels } });
   },
   joinChannel: (channel: Channel, user: User) => {
     const channels = get().channels.data ?? [];

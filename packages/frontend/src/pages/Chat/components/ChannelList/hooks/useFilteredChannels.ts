@@ -21,7 +21,7 @@ const createJoinableChannelsFilterStrategy: FilterStrategyCreator = (
     c.owner.id !== u.id && !c.members.find((m) => m.id === u.id);
 };
 
-export function useFilteredChannels() {
+export default function useFilteredChannels() {
   const { user } = useUser();
   const channels = useStore((state) => state.channels);
   const [filter, setFilter] = useState<ChannelFilter>(

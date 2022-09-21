@@ -78,7 +78,6 @@ export default function JoinChannelWithPasswordModal({
               onClick={() => {
                 joinChannel(password);
               }}
-              textAlign="center"
             >
               Join
             </Button>
