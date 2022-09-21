@@ -7,7 +7,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: 'current',
+      version: 'detect',
     },
   },
 };

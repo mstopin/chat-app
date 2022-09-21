@@ -2,3 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 yarn workspace @chat-app/backend lint && yarn workspace @chat-app/backend format
+yarn workspace @chat-app/frontend lint && yarn workspace @chat-app/frontend format
