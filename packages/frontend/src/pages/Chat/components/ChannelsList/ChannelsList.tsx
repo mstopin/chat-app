@@ -42,11 +42,7 @@ export default function ChannelsList() {
             />
             <Box p={2}>
               {channels.data!.filter(createFilterStrategy()).map((c) => (
-                <Channel
-                  channel={c}
-                  isOwnedByUser={c.owner.id === user!.id}
-                  key={c.id}
-                />
+                <Channel channel={c} user={user!} key={c.id} />
               ))}
             </Box>
           </>
