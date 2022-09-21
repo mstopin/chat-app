@@ -11,6 +11,7 @@ export interface ChannelSlice {
   };
   fetchChannels: () => Promise<void>;
   addChannel: (channel: Channel) => void;
+  deleteChannel: (channel: Channel) => void;
   joinChannel: (channel: Channel, user: User) => void;
   leaveChannel: (channel: Channel, user: User) => void;
 }
@@ -37,12 +38,20 @@ export const createChannelSlice: StateCreator<
     }
   },
   addChannel: (channel: Channel) => {
-    const channels = get().channels.data ?? [];
+    if (!get().channels.data) return;
+    const channels = get().channels.data!;
     const updatedChannels = [...channels, channel];
     set({ channels: { ...get().channels, data: updatedChannels } });
   },
+  deleteChannel: (channel: Channel) => {
+    if (!get().channels.data) return;
+    const channels = get().channels.data!;
+    const updatedChannels = channels.filter((c) => c.id !== channel.id);
+    set({ channels: { ...get().channels, data: updatedChannels } });
+  },
   joinChannel: (channel: Channel, user: User) => {
-    const channels = get().channels.data ?? [];
+    if (!get().channels.data) return;
+    const channels = get().channels.data!;
     const updatedChannels = channels.map((c) => {
       if (c.id !== channel.id) return c;
       return {
@@ -53,7 +62,8 @@ export const createChannelSlice: StateCreator<
     set({ channels: { ...get().channels, data: updatedChannels } });
   },
   leaveChannel: (channel: Channel, user: User) => {
-    const channels = get().channels.data ?? [];
+    if (!get().channels.data) return;
+    const channels = get().channels.data!;
     const updatedChannels = channels.map((c) => {
       if (c.id !== channel.id) return c;
       return {

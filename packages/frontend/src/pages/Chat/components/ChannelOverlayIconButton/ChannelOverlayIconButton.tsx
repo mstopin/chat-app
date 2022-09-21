@@ -1,8 +1,14 @@
-import { MouseEvent } from 'react';
-import { chakra, Box, Text, keyframes } from '@chakra-ui/react';
+import { chakra, Box, keyframes } from '@chakra-ui/react';
 import { ImSpinner8 } from 'react-icons/im';
 
-function LoadingIcon() {
+interface ChannelOverlayIconButtonProps {
+  icon: JSX.Element;
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+}
+
+export function LoadingIcon() {
   const rotate = keyframes`
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -15,24 +21,17 @@ function LoadingIcon() {
   );
 }
 
-interface ButtonProps {
-  icon: JSX.Element;
-  label: string;
-  isLoading: boolean;
-  onClick: (e: MouseEvent) => void;
-}
-
-export default function Button({
+export default function ChannelOverlayIconButton({
   icon,
   label,
-  isLoading,
+  disabled,
   onClick,
-}: ButtonProps) {
+}: ChannelOverlayIconButtonProps) {
   return (
     <Box
       position="absolute"
       top="50%"
-      right={1}
+      right="0"
       transform="translate(-50%, -50%)"
     >
       <chakra.button
@@ -51,13 +50,13 @@ export default function Button({
         }}
         title={label}
         aria-label={label}
-        onClick={onClick}
-        disabled={isLoading}
+        disabled={disabled}
+        onClick={(e) => {
+          e.preventDefault();
+          onClick();
+        }}
       >
-        <Text fontSize="xl">
-          {isLoading && <LoadingIcon />}
-          {!isLoading && icon}
-        </Text>
+        {icon}
       </chakra.button>
     </Box>
   );

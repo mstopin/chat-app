@@ -1,4 +1,4 @@
-import { Box, Text, Flex } from '@chakra-ui/react';
+import { chakra, Box, Text } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
 import { FaLock } from 'react-icons/fa';
 
@@ -7,6 +7,7 @@ import { useUser } from '../../../../hooks/useUser';
 import { Channel as ChannelType } from '../../../../types';
 
 import { ChannelMembershipButton } from '../ChannelMembershipButton';
+import { ChannelDeleteButton } from '../ChannelDeleteButton';
 
 interface ChannelProps {
   channel: ChannelType;
@@ -33,21 +34,23 @@ export default function Channel({ channel }: ChannelProps) {
         borderRadius="lg"
         position="relative"
       >
-        <Box py={2} px={2}>
-          <Flex alignItems="center">
-            <Text fontWeight="bold">{channel.name}</Text>
+        <Box py={2} pl={2} pr="64px">
+          <Text fontWeight="bold">
+            {channel.name}
             {channel.hasPassword && (
-              <Text ml={2} fontSize="sm">
+              <chakra.span ml={2} sx={{ '& > *': { display: 'inline' } }}>
                 <FaLock />
-              </Text>
+              </chakra.span>
             )}
-          </Flex>
+          </Text>
           <Text fontSize="sm">Owner: {ownerText}</Text>
           <Text fontSize="sm">Members: {numberMembers}</Text>
         </Box>
-        {/* TODO: allow to delete channel */}
         {channel.owner.id !== user.id && (
           <ChannelMembershipButton channel={channel} />
+        )}
+        {channel.owner.id === user.id && (
+          <ChannelDeleteButton channel={channel} />
         )}
       </Box>
     </Link>
