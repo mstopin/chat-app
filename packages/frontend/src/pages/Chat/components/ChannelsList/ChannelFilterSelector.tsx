@@ -15,16 +15,16 @@ export default function ChannelFilterSelector({
     <Flex borderBottom="1px solid #BDBDBD">
       <Box flex="1">
         <ChannelTypeButton
-          type={ChannelFilter.MY_CHANNELS}
-          isSelected={filter === ChannelFilter.MY_CHANNELS}
-          onClick={() => onFilterChange(ChannelFilter.MY_CHANNELS)}
+          type="Channels"
+          isSelected={filter === ChannelFilter.JOINED_CHANNELS}
+          onClick={() => onFilterChange(ChannelFilter.JOINED_CHANNELS)}
         />
       </Box>
       <Box flex="1">
         <ChannelTypeButton
-          type={ChannelFilter.ALL_CHANNELS}
-          isSelected={filter === ChannelFilter.ALL_CHANNELS}
-          onClick={() => onFilterChange(ChannelFilter.ALL_CHANNELS)}
+          type="Join channels"
+          isSelected={filter === ChannelFilter.JOINABLE_CHANNELS}
+          onClick={() => onFilterChange(ChannelFilter.JOINABLE_CHANNELS)}
         />
       </Box>
     </Flex>

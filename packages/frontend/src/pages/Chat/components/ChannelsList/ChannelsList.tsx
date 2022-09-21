@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Flex, Box } from '@chakra-ui/react';
 
+import { Channel as ChannelType } from '../../../../types';
 import { useStore } from '../../../../store';
 import { useUser } from '../../../../hooks/useUser';
 
@@ -12,13 +13,18 @@ export default function ChannelsList() {
   const { user } = useUser();
   const channels = useStore((state) => state.channels);
   const [channelFilter, setChannelFilter] = useState<ChannelFilter>(
-    ChannelFilter.MY_CHANNELS
+    ChannelFilter.JOINED_CHANNELS
   );
 
-  const filteredChannels =
-    channelFilter === ChannelFilter.ALL_CHANNELS
-      ? channels.data ?? []
-      : (channels.data ?? []).filter((c) => c.owner.id === user!.id);
+  const createFilterStrategy = () => {
+    if (channelFilter === ChannelFilter.JOINED_CHANNELS) {
+      return (c: ChannelType) =>
+        c.owner.id === user!.id || !!c.members.find((m) => m.id === user!.id);
+    }
+    return (c: ChannelType) =>
+      c.owner.id !== user!.id && !c.members.find((m) => m.id === user!.id);
+  };
+  const filteredChannels = (channels.data ?? []).filter(createFilterStrategy());
 
   return (
     <Flex w="100%" h="100%">

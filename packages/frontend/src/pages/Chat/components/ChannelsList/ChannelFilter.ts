@@ -1,6 +1,6 @@
 enum ChannelFilter {
-  MY_CHANNELS = 'My channels',
-  ALL_CHANNELS = 'All channels',
+  JOINED_CHANNELS,
+  JOINABLE_CHANNELS,
 }
 
 export default ChannelFilter;
