@@ -45,7 +45,10 @@ export default function Channel({ channel }: ChannelProps) {
           <Text fontSize="sm">Owner: {ownerText}</Text>
           <Text fontSize="sm">Members: {numberMembers}</Text>
         </Box>
-        <ChannelMembershipButton channel={channel} />
+        {/* TODO: allow to delete channel */}
+        {channel.owner.id !== user.id && (
+          <ChannelMembershipButton channel={channel} />
+        )}
       </Box>
     </Link>
   );

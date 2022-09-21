@@ -13,17 +13,22 @@ export default function useChannelMembership(channel: Channel) {
     !!channel.members.find((m) => m.id === user.id);
 
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const joinChannelStore = useStore((state) => state.joinChannel);
   const leaveChannelStore = useStore((state) => state.leaveChannel);
 
-  const joinChannel = async () => {
+  const joinChannel = async (password: string | null) => {
     try {
       setLoading(true);
-      await axios.post(`/api/channels/${channel.id}/join`);
+      await axios.post(`/api/channels/${channel.id}/join`, {
+        password,
+      });
       setLoading(false);
+      setError(null);
       joinChannelStore(channel, user);
-    } catch {
+    } catch (e: any) {
       setLoading(false);
+      setError(e.response.data.message ?? 'Unknown error');
     }
   };
 
@@ -40,7 +45,10 @@ export default function useChannelMembership(channel: Channel) {
 
   return {
     isLoading,
-    joinChannel: !isOwnerOrMember ? joinChannel : null,
-    leaveChannel: isOwnerOrMember ? leaveChannel : null,
+    error,
+    canJoin: !isOwnerOrMember,
+    canLeave: isOwnerOrMember,
+    joinChannel,
+    leaveChannel,
   };
 }

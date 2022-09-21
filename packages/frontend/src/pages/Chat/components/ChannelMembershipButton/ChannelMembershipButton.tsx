@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { IoEnter, IoExit } from 'react-icons/io5';
 
 import { Channel } from '../../../../types';
 
 import useChannelMembership from './hooks/useChannelMembership';
 import Button from './Button';
+import JoinChannelWithPasswordModal from './modals/JoinChannelWithPasswordModal';
 
 interface ChannelMembershipButtonProps {
   channel: Channel;
@@ -12,20 +14,38 @@ interface ChannelMembershipButtonProps {
 export default function ChannelMembershipButton({
   channel,
 }: ChannelMembershipButtonProps) {
-  const { isLoading, joinChannel, leaveChannel } =
+  const { isLoading, canJoin, error, joinChannel, leaveChannel } =
     useChannelMembership(channel);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-  const label = joinChannel ? 'Join channel' : 'Leave channel';
+  const label = canJoin ? 'Join channel' : 'Leave channel';
 
   return (
-    <Button
-      isLoading={isLoading}
-      label={label}
-      icon={joinChannel ? <IoEnter /> : <IoExit />}
-      onClick={(e) => {
-        e.preventDefault();
-        (joinChannel ?? leaveChannel)!();
-      }}
-    />
+    <>
+      <Button
+        isLoading={isLoading}
+        label={label}
+        icon={canJoin ? <IoEnter /> : <IoExit />}
+        onClick={(e) => {
+          e.preventDefault();
+          if (canJoin) {
+            if (channel.hasPassword) {
+              setModalOpen(true);
+            } else {
+              joinChannel(null);
+            }
+          } else {
+            leaveChannel();
+          }
+        }}
+      />
+      <JoinChannelWithPasswordModal
+        isOpen={isModalOpen}
+        isLoading={isLoading}
+        error={error}
+        joinChannel={joinChannel}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 }
