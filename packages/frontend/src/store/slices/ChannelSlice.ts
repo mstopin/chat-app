@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import axios from 'axios';
 
-import { Channel } from '../../types';
+import { Channel, User } from '../../types';
 
 export interface ChannelSlice {
   channels: {
@@ -10,6 +10,8 @@ export interface ChannelSlice {
     isLoading: boolean;
   };
   fetchChannels: () => Promise<void>;
+  joinChannel: (channel: Channel, user: User) => void;
+  leaveChannel: (channel: Channel, user: User) => void;
 }
 
 export const createChannelSlice: StateCreator<
@@ -17,7 +19,7 @@ export const createChannelSlice: StateCreator<
   [],
   [],
   ChannelSlice
-> = (set) => ({
+> = (set, get) => ({
   channels: {
     data: null,
     error: null,
@@ -32,5 +34,27 @@ export const createChannelSlice: StateCreator<
     } catch (e: any) {
       set({ channels: { data: null, error: e.message, isLoading: false } });
     }
+  },
+  joinChannel: (channel: Channel, user: User) => {
+    const channels = get().channels.data ?? [];
+    const updatedChannels = channels.map((c) => {
+      if (c.id !== channel.id) return c;
+      return {
+        ...channel,
+        members: [...channel.members, user],
+      };
+    });
+    set({ channels: { ...get().channels, data: updatedChannels } });
+  },
+  leaveChannel: (channel: Channel, user: User) => {
+    const channels = get().channels.data ?? [];
+    const updatedChannels = channels.map((c) => {
+      if (c.id !== channel.id) return c;
+      return {
+        ...channel,
+        members: channel.members.filter((m) => m.id !== user.id),
+      } as Channel;
+    });
+    set({ channels: { ...get().channels, data: updatedChannels } });
   },
 });
