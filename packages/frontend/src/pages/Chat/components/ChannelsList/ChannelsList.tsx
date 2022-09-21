@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex, Box, Center } from '@chakra-ui/react';
 
 import { Channel as ChannelType } from '../../../../types';
 import { useStore } from '../../../../store';
 import { useUser } from '../../../../hooks/useUser';
+import { Loader } from '../../../../components/Loader';
 
 import ChannelFilter from './ChannelFilter';
 import ChannelFilterSelector from './ChannelFilterSelector';
@@ -24,24 +25,32 @@ export default function ChannelsList() {
     return (c: ChannelType) =>
       c.owner.id !== user!.id && !c.members.find((m) => m.id === user!.id);
   };
-  const filteredChannels = (channels.data ?? []).filter(createFilterStrategy());
 
   return (
     <Flex w="100%" h="100%">
       <Box flex="1" borderRight="1px solid #BDBDBD">
-        <ChannelFilterSelector
-          filter={channelFilter}
-          onFilterChange={setChannelFilter}
-        />
-        <Box p={2}>
-          {filteredChannels.map((c) => (
-            <Channel
-              channel={c}
-              isOwnedByUser={c.owner.id === user!.id}
-              key={c.id}
+        {(channels.isLoading || channels.error) && (
+          <Center h="100%">
+            <Loader size={80} />
+          </Center>
+        )}
+        {!!channels.data && (
+          <>
+            <ChannelFilterSelector
+              filter={channelFilter}
+              onFilterChange={setChannelFilter}
             />
-          ))}
-        </Box>
+            <Box p={2}>
+              {channels.data!.filter(createFilterStrategy()).map((c) => (
+                <Channel
+                  channel={c}
+                  isOwnedByUser={c.owner.id === user!.id}
+                  key={c.id}
+                />
+              ))}
+            </Box>
+          </>
+        )}
       </Box>
     </Flex>
   );
