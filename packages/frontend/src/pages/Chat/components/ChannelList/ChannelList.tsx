@@ -12,7 +12,12 @@ import CreateChannelModal from './modals/CreateChannelModal';
 
 export default function ChannelList() {
   const { channels, isLoading, filter, setFilter } = useFilteredChannels();
-  const { isLoading: isCreatingChannel, createChannel } = useCreateChannel();
+  const {
+    isLoading: isCreatingChannel,
+    error: createChannelError,
+    resetError: resetChannelError,
+    createChannel,
+  } = useCreateChannel();
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   return (
@@ -51,8 +56,12 @@ export default function ChannelList() {
             <CreateChannelModal
               isOpen={isModalOpen}
               isLoading={isCreatingChannel}
+              error={createChannelError}
               createChannel={createChannel}
-              onClose={() => setModalOpen(false)}
+              onClose={() => {
+                resetChannelError();
+                setModalOpen(false);
+              }}
             />
           </>
         )}

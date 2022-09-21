@@ -1,18 +1,12 @@
 import { useState } from 'react';
+import { FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
+
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  FormControl,
-  FormLabel,
-  Input,
-  ModalBody,
-  Button,
-  Flex,
-  Text,
-} from '@chakra-ui/react';
+  ModalButton,
+  ModalPrimaryButton,
+  ModalButtonContainer,
+} from '../../../../../components/Modal';
 
 interface JoinChannelWithPasswordModalProps {
   isOpen: boolean;
@@ -34,11 +28,12 @@ export default function JoinChannelWithPasswordModal({
   const onCloseNoop = () => undefined;
 
   return (
-    <Modal isOpen={isOpen} onClose={isLoading ? onCloseNoop : onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Join channel</ModalHeader>
-        <ModalBody>
+    <Modal
+      title="Join channel"
+      isOpen={isOpen}
+      onClose={isLoading ? onCloseNoop : onClose}
+      renderBody={() => (
+        <>
           <FormControl>
             <FormLabel>Channel password:</FormLabel>
             <Input
@@ -53,37 +48,23 @@ export default function JoinChannelWithPasswordModal({
               {error}
             </Text>
           )}
-        </ModalBody>
-        <ModalFooter display="block">
-          <Flex justifyContent="end">
-            <Button display="block" flex="0 1 100px" mr={4} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              display="block"
-              flex="0 1 100px"
-              color="white"
-              bg="#2F80ED"
-              sx={{
-                '&:hover': {
-                  bg: '#1369DE !important',
-                },
-                '& > div': {
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                },
-              }}
-              isLoading={isLoading}
-              onClick={() => {
-                joinChannel(password);
-              }}
-            >
-              Join
-            </Button>
-          </Flex>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </>
+      )}
+      renderFooter={() => (
+        <ModalButtonContainer>
+          <ModalButton
+            text="Cancel"
+            onClick={isLoading ? onCloseNoop : onClose}
+          />
+          <ModalPrimaryButton
+            text="Join"
+            isLoading={isLoading}
+            onClick={() => {
+              joinChannel(password);
+            }}
+          />
+        </ModalButtonContainer>
+      )}
+    />
   );
 }

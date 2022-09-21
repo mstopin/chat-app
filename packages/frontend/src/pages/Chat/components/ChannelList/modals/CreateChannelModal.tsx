@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   FormControl,
   FormLabel,
   FormErrorMessage,
   Input,
-  ModalBody,
-  Button,
-  Flex,
+  Text,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
+import {
+  Modal,
+  ModalButton,
+  ModalPrimaryButton,
+  ModalButtonContainer,
+} from '../../../../../components/Modal';
+
 interface CreateChannelModalProps {
   isOpen: boolean;
   isLoading: boolean;
+  error: string | null;
   createChannel: (name: string, password: string | null) => Promise<void>;
   onClose: () => void;
 }
@@ -26,6 +27,7 @@ interface CreateChannelModalProps {
 export default function CreateChannelModal({
   isOpen,
   isLoading,
+  error,
   createChannel,
   onClose,
 }: CreateChannelModalProps) {
@@ -54,18 +56,18 @@ export default function CreateChannelModal({
   };
 
   useEffect(() => {
-    if (!isLoading && hasSubmitted) {
-      console.log('ggg');
+    if (!isLoading && !error && hasSubmitted) {
       resetFormAndClose();
     }
   }, [isLoading, formik, resetFormAndClose]);
 
   return (
-    <Modal isOpen={isOpen} onClose={resetFormAndClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Create channel</ModalHeader>
-        <ModalBody>
+    <Modal
+      title="Create channel"
+      isOpen={isOpen}
+      onClose={resetFormAndClose}
+      renderBody={() => (
+        <>
           <FormControl
             isInvalid={!!formik.touched.name && !!formik.errors.name}
           >
@@ -89,40 +91,23 @@ export default function CreateChannelModal({
             />
             <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
           </FormControl>
-        </ModalBody>
-        <ModalFooter display="block">
-          <Flex justifyContent="end">
-            <Button
-              display="block"
-              flex="0 1 100px"
-              mr={4}
-              onClick={resetFormAndClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              display="block"
-              flex="0 1 100px"
-              color="white"
-              bg="#2F80ED"
-              sx={{
-                '&:hover': {
-                  bg: '#1369DE !important',
-                },
-                '& > div': {
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                },
-              }}
-              isLoading={isLoading}
-              onClick={() => formik.handleSubmit()}
-            >
-              Create
-            </Button>
-          </Flex>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          {!!error && (
+            <Text mt={2} color="red.500" fontWeight="bold">
+              {error}
+            </Text>
+          )}
+        </>
+      )}
+      renderFooter={() => (
+        <ModalButtonContainer>
+          <ModalButton text="Cancel" onClick={resetFormAndClose} />
+          <ModalPrimaryButton
+            text="Create"
+            isLoading={isLoading}
+            onClick={() => formik.handleSubmit()}
+          />
+        </ModalButtonContainer>
+      )}
+    />
   );
 }

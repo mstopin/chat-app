@@ -6,6 +6,7 @@ import { useStore } from '../../../../../store';
 
 export default function useCreateChannel() {
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const addChannel = useStore((state) => state.addChannel);
 
   const createChannel = async (name: string, password: string | null) => {
@@ -18,14 +19,20 @@ export default function useCreateChannel() {
         })
       ).data as Channel;
       setLoading(false);
+      setError(null);
       addChannel(channel);
-    } catch {
+    } catch (e: any) {
       setLoading(false);
+      setError(e.response.data.message ?? 'Unknown error');
     }
   };
 
+  const resetError = () => setError(null);
+
   return {
     isLoading,
+    error,
     createChannel,
+    resetError,
   };
 }
