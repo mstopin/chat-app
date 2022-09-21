@@ -72,7 +72,7 @@ export class ChannelService extends BaseChannelService {
   }
 
   async join(joinChannelDTO: JoinChannelDTO) {
-    const { userId, channelId } = joinChannelDTO;
+    const { userId, channelId, password } = joinChannelDTO;
     const [user, channel] = await this.findUserAndChannelById(
       userId,
       channelId,
@@ -84,6 +84,14 @@ export class ChannelService extends BaseChannelService {
     }
     if (channel.members.find((u) => u.id === user.id)) {
       throw new BadRequestException('You have already joined this channel');
+    }
+    if (channel.password) {
+      if (
+        !password ||
+        !(await this.hashingService.compare(password, channel.password))
+      ) {
+        throw new BadRequestException('Invalid password');
+      }
     }
     channel.members.push(user);
     await this.channelRepository.save(channel);

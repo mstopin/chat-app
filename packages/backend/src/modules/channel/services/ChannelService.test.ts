@@ -49,7 +49,10 @@ describe('ChannelService', () => {
       new User('user-id-1', 'email-1', 'password-1', 'name-1', 'surname-1'),
       new User('user-id-2', 'email-2', 'password-2', 'name-2', 'surname-2'),
     ];
-    channels = [new Channel('channel-id-1', users[0], 'name-1', null, [], [])];
+    channels = [
+      new Channel('channel-id-1', users[0], 'name-1', null, [], []),
+      new Channel('channel-id-2', users[0], 'name-2', 'password-2', [], []),
+    ];
 
     userServiceMock = createUserServiceMock();
     channelRepositoryMock = createChannelRepositoryMock();
@@ -207,7 +210,7 @@ describe('ChannelService', () => {
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await deleteChannel('user-id-1', 'channel-id-2');
+        await deleteChannel('user-id-1', 'channel-id-3');
       }).rejects.toThrow('Channel does not exist');
     });
 
@@ -228,15 +231,20 @@ describe('ChannelService', () => {
   });
 
   describe('join', () => {
-    const joinChannel = async (userId: string, channelId: string) => {
+    const joinChannel = async (
+      userId: string,
+      channelId: string,
+      password: string | null
+    ) => {
       await channelService.join({
         userId,
         channelId,
+        password,
       });
     };
 
     it('check if user exists', async () => {
-      await joinChannel('user-id-2', 'channel-id-1');
+      await joinChannel('user-id-2', 'channel-id-1', null);
 
       expect(userServiceMock.findById).toHaveBeenCalledTimes(1);
       expect(userServiceMock.findById).toHaveBeenCalledWith('user-id-2');
@@ -244,12 +252,12 @@ describe('ChannelService', () => {
 
     it('throws if user does not exist', async () => {
       await expect(async () => {
-        await joinChannel('user-id-3', 'channel-id-1');
+        await joinChannel('user-id-3', 'channel-id-1', null);
       }).rejects.toThrow('User does not exist');
     });
 
     it('checks if channel exists', async () => {
-      await joinChannel('user-id-2', 'channel-id-1');
+      await joinChannel('user-id-2', 'channel-id-1', null);
 
       expect(channelRepositoryMock.findOne).toHaveBeenCalledTimes(1);
       expect(channelRepositoryMock.findOne).toHaveBeenCalledWith({
@@ -266,12 +274,12 @@ describe('ChannelService', () => {
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await joinChannel('user-id-2', 'channel-id-2');
+        await joinChannel('user-id-2', 'channel-id-3', null);
       }).rejects.toThrow('Channel does not exist');
     });
 
     it('adds new user to channel', async () => {
-      await joinChannel('user-id-2', 'channel-id-1');
+      await joinChannel('user-id-2', 'channel-id-1', null);
 
       expect(channelRepositoryMock.save).toHaveBeenCalledTimes(1);
       expect(channelRepositoryMock.save).toHaveBeenCalledWith({
@@ -284,14 +292,34 @@ describe('ChannelService', () => {
       channels[0]?.members.push(users[1] as User);
 
       await expect(async () => {
-        await joinChannel('user-id-2', 'channel-id-1');
+        await joinChannel('user-id-2', 'channel-id-1', null);
       }).rejects.toThrow('You have already joined this channel');
     });
 
     it('throws if owner tries to join their own channel', async () => {
       await expect(async () => {
-        await joinChannel('user-id-1', 'channel-id-1');
+        await joinChannel('user-id-1', 'channel-id-1', null);
       }).rejects.toThrow('You cannot join your own channel');
+    });
+
+    it('computes password hash if channels has password', async () => {
+      const spy = jest.spyOn(hashingService, 'compare');
+      await joinChannel('user-id-2', 'channel-id-2', 'password-2');
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('password-2', 'password-2');
+    });
+
+    it('throws if joining protected channel without password', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-2', 'channel-id-2', null);
+      }).rejects.toThrow('Invalid password');
+    });
+
+    it('throws if joining protected channel with invalid password', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-2', 'channel-id-2', 'password-3');
+      }).rejects.toThrow('Invalid password');
     });
   });
 
@@ -338,7 +366,7 @@ describe('ChannelService', () => {
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await leaveChannel('user-id-2', 'channel-id-2');
+        await leaveChannel('user-id-2', 'channel-id-3');
       }).rejects.toThrow('Channel does not exist');
     });
 

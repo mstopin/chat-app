@@ -17,6 +17,7 @@ import { AuthGuard } from '../../auth/guards/AuthGuard';
 import { ChannelService } from '../services/ChannelService';
 
 import { CreateChannelRequest } from './requests/CreateChannelRequest';
+import { JoinChannelRequest } from './requests/JoinChannelReques';
 import { ChannelResponse } from './responses/ChannelResponse';
 
 @Controller('/channels')
@@ -62,11 +63,14 @@ export class ChannelController {
   @Post('/:channelId/join')
   async joinChannel(
     @UserId() userId: string,
-    @Param('channelId') channelId: string
+    @Param('channelId') channelId: string,
+    @Body() joinChannelRequest: JoinChannelRequest
   ) {
+    const { password } = joinChannelRequest;
     await this.channelService.join({
       userId,
       channelId,
+      password,
     });
     return {
       success: true,
