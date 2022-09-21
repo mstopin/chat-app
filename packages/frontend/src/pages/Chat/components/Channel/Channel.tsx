@@ -2,26 +2,27 @@ import { Box, Text, Flex } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
 import { FaLock } from 'react-icons/fa';
 
-import { Channel as ChannelType, User } from '../../../../types';
+import { useUser } from '../../../../hooks/useUser';
 
-import ChannelMemberShipButton from './ChannelMembershipButton';
+import { Channel as ChannelType } from '../../../../types';
+
+import { ChannelMembershipButton } from '../ChannelMembershipButton';
 
 interface ChannelProps {
   channel: ChannelType;
-  user: User;
 }
 
-export default function Channel({ channel, user }: ChannelProps) {
+export default function Channel({ channel }: ChannelProps) {
   const { channelId: paramChannelId } = useParams();
+  const user = useUser().user!;
 
-  const isSelected = channel.id === paramChannelId;
-  const isOwner = channel.owner.id === user.id;
-  const isMember = !!channel.members.find((m) => m.id === user.id);
+  const isSelected = paramChannelId === channel.id;
 
-  const memberCount = channel.members.length + 1; // members + owner
-  const ownerText = isOwner
-    ? 'You'
-    : `${channel.owner.name} ${channel.owner.surname}`;
+  const numberMembers = channel.members.length + 1;
+  const ownerText =
+    channel.owner.id === user.id
+      ? 'You'
+      : `${channel.owner.name} ${channel.owner.surname}`;
 
   return (
     <Link to={`/chat/${channel.id}`} style={{ display: 'block' }}>
@@ -42,9 +43,9 @@ export default function Channel({ channel, user }: ChannelProps) {
             )}
           </Flex>
           <Text fontSize="sm">Owner: {ownerText}</Text>
-          <Text fontSize="sm">Members: {memberCount}</Text>
+          <Text fontSize="sm">Members: {numberMembers}</Text>
         </Box>
-        <ChannelMemberShipButton isMember={isOwner || isMember} />
+        <ChannelMembershipButton channel={channel} />
       </Box>
     </Link>
   );

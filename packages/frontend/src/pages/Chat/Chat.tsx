@@ -4,7 +4,7 @@ import { Grid, GridItem } from '@chakra-ui/react';
 
 import { useStore } from '../../store';
 
-import { ChannelsList } from './components/ChannelsList';
+import { ChannelList } from './components/ChannelList';
 
 export default function Chat() {
   const channels = useStore((state) => state.channels);
@@ -19,7 +19,7 @@ export default function Chat() {
   return (
     <Grid h="100vh" templateColumns="1fr 2.5fr">
       <GridItem>
-        <ChannelsList />
+        <ChannelList />
       </GridItem>
       <GridItem>
         <Outlet />
