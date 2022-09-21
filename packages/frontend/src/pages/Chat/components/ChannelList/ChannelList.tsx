@@ -35,7 +35,7 @@ export default function ChannelList() {
                 filter={filter}
                 onFilterChange={setFilter}
               />
-              <Box p={2} flex="1 0 0" overflowY="scroll">
+              <Box p={2} flex="1 0 0" overflowY="auto">
                 {channels.map((c) => (
                   <Channel channel={c} key={c.id} />
                 ))}

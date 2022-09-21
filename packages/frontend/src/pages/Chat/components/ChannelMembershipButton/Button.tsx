@@ -5,11 +5,11 @@ import { ImSpinner8 } from 'react-icons/im';
 function LoadingIcon() {
   const rotate = keyframes`
     from { transform: rotate(0deg); }
-    to { transform: rotate(359deg); }
+    to { transform: rotate(360deg); }
   `;
 
   return (
-    <chakra.span animation={`${rotate} infinite .75s linear`}>
+    <chakra.span animation={`${rotate} infinite .75s linear`} display="block">
       <ImSpinner8 />
     </chakra.span>
   );
