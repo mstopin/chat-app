@@ -2,15 +2,15 @@ import { Flex, Box, Button, Text } from '@chakra-ui/react';
 
 import { ChannelFilter } from '../../types';
 
-interface ChannelListFilterSelectorProps {
+interface ChannelFilterSelectorProps {
   filter: ChannelFilter;
   onFilterChange: (filter: ChannelFilter) => void;
 }
 
-export default function ChannelListFilterSelector({
+export default function ChannelFilterSelector({
   filter,
   onFilterChange,
-}: ChannelListFilterSelectorProps) {
+}: ChannelFilterSelectorProps) {
   return (
     <Flex borderBottom="1px solid #BDBDBD">
       <Box flex="1">

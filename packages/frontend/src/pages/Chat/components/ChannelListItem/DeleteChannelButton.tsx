@@ -2,24 +2,20 @@ import { FaTrash } from 'react-icons/fa';
 
 import { Channel } from '../../../../types';
 
-import {
-  ChannelOverlayIconButton,
-  LoadingIcon,
-} from '../ChannelOverlayIconButton';
-
+import OverlayIconButton, { LoadingIcon } from './OverlayIconButton';
 import useDeleteChannel from './hooks/useDeleteChannel';
 
-interface ChannelDeleteButtonProps {
+interface DeleteChannelButtonProps {
   channel: Channel;
 }
 
-export default function ChannelDeleteButton({
+export default function DeleteChannelButton({
   channel,
-}: ChannelDeleteButtonProps) {
+}: DeleteChannelButtonProps) {
   const { isLoading, deleteChannel } = useDeleteChannel();
 
   return (
-    <ChannelOverlayIconButton
+    <OverlayIconButton
       icon={isLoading ? <LoadingIcon /> : <FaTrash />}
       label="Delete channel"
       disabled={isLoading}

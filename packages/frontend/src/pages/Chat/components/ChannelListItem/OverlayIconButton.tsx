@@ -1,7 +1,7 @@
 import { chakra, Box, keyframes } from '@chakra-ui/react';
 import { ImSpinner8 } from 'react-icons/im';
 
-interface ChannelOverlayIconButtonProps {
+interface OverlayIconButtonProps {
   icon: JSX.Element;
   label: string;
   disabled: boolean;
@@ -21,12 +21,12 @@ export function LoadingIcon() {
   );
 }
 
-export default function ChannelOverlayIconButton({
+export default function OverlayIconButton({
   icon,
   label,
   disabled,
   onClick,
-}: ChannelOverlayIconButtonProps) {
+}: OverlayIconButtonProps) {
   return (
     <Box
       position="absolute"

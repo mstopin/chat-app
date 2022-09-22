@@ -3,18 +3,20 @@ import { Link, useParams } from 'react-router-dom';
 import { FaLock } from 'react-icons/fa';
 
 import { useUser } from '../../../../hooks/useUser';
-
 import { Channel as ChannelType } from '../../../../types';
 
-import { ChannelMembershipButton } from '../ChannelMembershipButton';
-import { ChannelDeleteButton } from '../ChannelDeleteButton';
+import ManageMembershipButton from './ManageMembershipButton';
+import DeleteChannelButton from './DeleteChannelButton';
 
-interface ChannelProps {
+interface ChannelListItemProps {
   channel: ChannelType;
   isSelectable: boolean;
 }
 
-export default function Channel({ channel, isSelectable }: ChannelProps) {
+export default function ChannelListItem({
+  channel,
+  isSelectable,
+}: ChannelListItemProps) {
   const { channelId: paramChannelId } = useParams();
   const user = useUser().user!;
 
@@ -47,10 +49,10 @@ export default function Channel({ channel, isSelectable }: ChannelProps) {
         <Text fontSize="sm">Members: {numberMembers}</Text>
       </Box>
       {channel.owner.id !== user.id && (
-        <ChannelMembershipButton channel={channel} />
+        <ManageMembershipButton channel={channel} />
       )}
       {channel.owner.id === user.id && (
-        <ChannelDeleteButton channel={channel} />
+        <DeleteChannelButton channel={channel} />
       )}
     </Box>
   );

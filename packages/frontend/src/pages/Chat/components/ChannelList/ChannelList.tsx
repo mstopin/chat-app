@@ -4,12 +4,12 @@ import { Flex, Box, Center, Button } from '@chakra-ui/react';
 import { Loader } from '../../../../components/Loader';
 
 import { ChannelFilter } from '../../types';
-import { ChannelListFilterSelector } from '../ChannelListFilterSelector';
-import { Channel } from '../Channel';
+import { ChannelListItem } from '../ChannelListItem';
 
+import ChannelFilterSelector from './ChannelTypeFilterSelector';
+import CreateChannelModal from './modals/CreateChannelModal';
 import useFilteredChannels from './hooks/useFilteredChannels';
 import useCreateChannel from './hooks/useCreateChannel';
-import CreateChannelModal from './modals/CreateChannelModal';
 
 export default function ChannelList() {
   const { channels, isLoading, filter, setFilter } = useFilteredChannels();
@@ -32,13 +32,13 @@ export default function ChannelList() {
         {!isLoading && (
           <>
             <Flex h="100%" direction="column">
-              <ChannelListFilterSelector
+              <ChannelFilterSelector
                 filter={filter}
                 onFilterChange={setFilter}
               />
               <Box p={2} flex="1 0 0" overflowY="auto">
                 {channels.map((c) => (
-                  <Channel
+                  <ChannelListItem
                     channel={c}
                     isSelectable={filter === ChannelFilter.JOINED_CHANNELS}
                     key={c.id}

@@ -3,21 +3,17 @@ import { ImEnter, ImExit } from 'react-icons/im';
 
 import { Channel } from '../../../../types';
 
-import {
-  ChannelOverlayIconButton,
-  LoadingIcon,
-} from '../ChannelOverlayIconButton';
-
-import useChannelMembership from './hooks/useChannelMembership';
+import OverlayIconButton, { LoadingIcon } from './OverlayIconButton';
 import JoinChannelWithPasswordModal from './modals/JoinChannelWithPasswordModal';
+import useChannelMembership from './hooks/useChannelMembership';
 
-interface ChannelMembershipButtonProps {
+interface ManageMembershipButtonProps {
   channel: Channel;
 }
 
-export default function ChannelMembershipButton({
+export default function ManageMembershipButton({
   channel,
-}: ChannelMembershipButtonProps) {
+}: ManageMembershipButtonProps) {
   const { isLoading, canJoin, error, joinChannel, leaveChannel } =
     useChannelMembership(channel);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -33,7 +29,7 @@ export default function ChannelMembershipButton({
 
   return (
     <>
-      <ChannelOverlayIconButton
+      <OverlayIconButton
         icon={getIcon()}
         label={label}
         disabled={isLoading}
