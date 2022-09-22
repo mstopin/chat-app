@@ -3,6 +3,7 @@ import { Flex, Box, Center, Button } from '@chakra-ui/react';
 
 import { Loader } from '../../../../components/Loader';
 
+import { ChannelFilter } from '../../types';
 import { ChannelListFilterSelector } from '../ChannelListFilterSelector';
 import { Channel } from '../Channel';
 
@@ -37,7 +38,11 @@ export default function ChannelList() {
               />
               <Box p={2} flex="1 0 0" overflowY="auto">
                 {channels.map((c) => (
-                  <Channel channel={c} key={c.id} />
+                  <Channel
+                    channel={c}
+                    isSelectable={filter === ChannelFilter.JOINED_CHANNELS}
+                    key={c.id}
+                  />
                 ))}
               </Box>
               <Box p={2} borderTop="1px solid #BDBDBD">
