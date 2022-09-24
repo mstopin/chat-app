@@ -34,10 +34,11 @@ export default function LogInForm() {
     }),
     onSubmit: async ({ email, password }) => {
       try {
-        const response = await axios.post('/api/auth/login', {
+        await axios.post('/api/auth/login', {
           email,
           password,
         });
+        const response = await axios.get('/api/auth/me');
         setUser(response.data as User);
       } catch (e: any) {
         if (e.response.data.statusCode === 401) {
