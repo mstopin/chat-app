@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { HashingModule } from './common/modules/HashingModule';
+import { RedisModule } from './common/modules/redis';
 
 import { UserModule } from './modules/user';
 import { AuthModule } from './modules/auth';
@@ -29,6 +30,7 @@ import { MessageModule } from './modules/message';
       },
     }),
     HashingModule,
+    RedisModule,
     UserModule,
     AuthModule,
     ChannelModule,

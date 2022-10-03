@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Redis from 'ioredis';
 import session from 'express-session';
 import sessionConnectRedis from 'connect-redis';
+
+import { RedisService } from './common/modules/redis';
 
 import { AppModule } from './AppModule';
 
@@ -11,9 +12,8 @@ import { AppModule } from './AppModule';
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
 
-  const REDIS_HOST = configService.getOrThrow<string>('REDIS_HOST');
-  const REDIS_PORT = configService.getOrThrow<number>('REDIS_PORT');
-  const redis = new Redis(REDIS_PORT, REDIS_HOST);
+  const redisService = app.get<RedisService>(RedisService);
+  const redis = redisService.getClient();
 
   const SESSION_SECRET = configService.getOrThrow<string>('SESSION_SECRET');
   const RedisSessionStore = sessionConnectRedis(session);
