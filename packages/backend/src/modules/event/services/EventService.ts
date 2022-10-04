@@ -24,7 +24,7 @@ export class EventService {
     }
 
     const userTokenKey = `events.users.${userId}.token`;
-    if (await this.redisClient.exists(userTokenKey, user.id)) {
+    if (await this.redisClient.exists(userTokenKey)) {
       return this.redisClient.get(userTokenKey);
     }
 
@@ -34,7 +34,7 @@ export class EventService {
     await this.redisClient
       .multi()
       .setex(userTokenKey, EventService.KEY_TTL, accessToken)
-      .setex(tokenUserKey, EventService.KEY_TTL, accessToken)
+      .setex(tokenUserKey, EventService.KEY_TTL, user.id)
       .exec();
 
     return accessToken;

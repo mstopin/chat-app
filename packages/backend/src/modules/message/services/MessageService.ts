@@ -24,9 +24,16 @@ export class MessageService {
       content,
     });
 
+    const recipientIds =
+      user.id === channel.owner.id
+        ? channel.members.map((m) => m.id)
+        : [
+            channel.owner.id,
+            ...channel.members.flatMap((m) => (m.id === user.id ? [] : m.id)),
+          ];
     this.eventService.publish(<NewMessageEvent>{
       type: 'NEW_MESSAGE',
-      recipientIds: channel.members.map((m) => m.id),
+      recipientIds: recipientIds,
       payload: {
         content,
         sender: {
