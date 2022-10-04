@@ -9,6 +9,7 @@ import { UserModule } from './modules/user';
 import { AuthModule } from './modules/auth';
 import { ChannelModule } from './modules/channel';
 import { MessageModule } from './modules/message';
+import { EventModule } from './modules/event/EventModule';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { MessageModule } from './modules/message';
     AuthModule,
     ChannelModule,
     MessageModule,
+    EventModule,
   ],
 })
 export class AppModule {}
