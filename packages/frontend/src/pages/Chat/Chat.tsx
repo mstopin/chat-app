@@ -6,8 +6,10 @@ import { useStore } from '../../store';
 
 import { ChannelList } from './components/ChannelList';
 import { Channel } from './components/Channel';
+import { useEvents } from './hooks/useEvents';
 
 export default function Chat() {
+  useEvents();
   const channels = useStore((state) => state.channels);
   const fetchChannels = useStore((state) => state.fetchChannels);
 
