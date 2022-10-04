@@ -25,7 +25,7 @@ export class EventListener {
 
   async start() {
     this.redis.getSubscriptionClient().on('message', (channel, message) => {
-      if (channel !== EventListener.EVENT_CHANNEL && this.eventHandler) {
+      if (channel === EventListener.EVENT_CHANNEL && this.eventHandler) {
         const event = JSON.parse(message) as Event;
         this.eventHandler(event);
       }

@@ -15,12 +15,23 @@ if (!APP_PORT) {
 (async function app() {
   const redis = new Redis();
   const eventListener = new EventListener(redis);
-  await eventListener.start();
 
   const http = createServer();
   const wss = new WebSocketServer({ noServer: true });
 
   const users = new Map<string, WebSocket>();
+
+  eventListener.setEventHandler((event) => {
+    event.recipientIds.forEach((rId) => {
+      users.get(rId)?.send(
+        JSON.stringify({
+          type: event.type,
+          payload: event.payload,
+        })
+      );
+    });
+  });
+  await eventListener.start();
 
   http.on('upgrade', async (req, socket, head) => {
     try {
