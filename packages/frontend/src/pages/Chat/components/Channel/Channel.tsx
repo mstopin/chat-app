@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Flex, Box, Text, Input, Button } from '@chakra-ui/react';
 
 import { Channel as ChannelType } from '../../../../types';
@@ -24,6 +24,11 @@ export default function Channel({ channel }: ChannelProps) {
     });
   };
 
+  const messageListEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    messageListEndRef.current?.scrollIntoView({ behavior: 'auto' });
+  });
+
   return (
     <Flex h="100%" direction="column">
       <Box borderBottom="1px solid #BDBDBD">
@@ -35,6 +40,7 @@ export default function Channel({ channel }: ChannelProps) {
       </Box>
       <Box flexGrow="1" overflowY="auto">
         {messages.data && <MessageList messages={messages.data} />}
+        <div ref={messageListEndRef} />
       </Box>
       <Box borderTop="1px solid #BDBDBD">
         <Box p={2}>
