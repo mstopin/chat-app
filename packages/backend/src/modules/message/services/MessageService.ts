@@ -2,14 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { EventService } from '../../event/services/EventService';
+
 import { Message } from '../entities/Message';
+import { NewMessageEvent } from '../events/NewMessageEvent';
 
 import { CreateMessageDTO } from './dtos/CreateMessageDTO';
 
 @Injectable()
 export class MessageService {
   constructor(
-    @InjectRepository(Message) private messageRepository: Repository<Message>
+    @InjectRepository(Message) private messageRepository: Repository<Message>,
+    private eventService: EventService
   ) {}
 
   async createMessage(createMessageDTO: CreateMessageDTO) {
@@ -19,6 +23,21 @@ export class MessageService {
       channel,
       content,
     });
+
+    this.eventService.publish(<NewMessageEvent>{
+      type: 'NEW_MESSAGE',
+      recipientIds: channel.members.map((m) => m.id),
+      payload: {
+        content,
+        sender: {
+          id: user.id,
+          name: user.name,
+          surname: user.surname,
+        },
+        created_at: message.created_at.toISOString(),
+      },
+    });
+
     return message;
   }
 }
