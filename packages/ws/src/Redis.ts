@@ -2,6 +2,7 @@ import RedisClient from 'ioredis';
 
 export class Redis {
   private client: RedisClient;
+  private subcriptionClient: RedisClient;
 
   constructor() {
     const REDIS_HOST = process.env['REDIS_HOST'];
@@ -12,9 +13,14 @@ export class Redis {
     }
 
     this.client = new RedisClient(Number(REDIS_PORT), REDIS_HOST);
+    this.subcriptionClient = new RedisClient(Number(REDIS_PORT), REDIS_HOST);
   }
 
   getClient() {
     return this.client;
+  }
+
+  getSubscriptionClient() {
+    return this.subcriptionClient;
   }
 }
