@@ -1,0 +1,26 @@
+{
+  "name": "@chat-app/ws",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/ws": "^8.5.3",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ioredis": "^5.2.3",
+    "rimraf": "^3.0.2",
+    "ws": "^8.9.0"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo",
+    "build": "tsc",
+    "start": "node dist/index",
+    "start:dev": "nodemon src/index.ts",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  }
+}

@@ -3,3 +3,4 @@
 
 yarn workspace @chat-app/backend lint && yarn workspace @chat-app/backend format
 yarn workspace @chat-app/frontend lint && yarn workspace @chat-app/frontend format
+yarn workspace @chat-app/ws lint && yarn workspace @chat-app/ws format
