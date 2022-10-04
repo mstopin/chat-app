@@ -44,8 +44,6 @@
     "start:dev": "nest start --watch -p tsconfig.json",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "jest": {

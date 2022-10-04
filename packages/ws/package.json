@@ -19,8 +19,6 @@
     "prebuild": "rimraf dist tsconfig.tsbuildinfo",
     "build": "tsc",
     "start": "node dist/index",
-    "start:dev": "nodemon src/index.ts",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\""
+    "start:dev": "nodemon src/index.ts"
   }
 }
