@@ -18,5 +18,6 @@ module.exports = {
   ignorePatterns: ['.eslintrc.js', 'commitlint.config.js'],
   rules: {
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

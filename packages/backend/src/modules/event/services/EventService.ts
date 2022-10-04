@@ -5,6 +5,8 @@ import { RedisService, RedisClient } from '../../../common/modules/redis';
 
 import { UserService } from '../../user/services/UserService';
 
+import { Event } from '../events/Event';
+
 @Injectable()
 export class EventService {
   private static KEY_TTL = 1800;
@@ -36,5 +38,10 @@ export class EventService {
       .exec();
 
     return accessToken;
+  }
+
+  async publish(event: Event) {
+    const CHANNEL_NAME = 'events';
+    this.redisClient.publish(CHANNEL_NAME, JSON.stringify(event));
   }
 }
