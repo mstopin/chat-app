@@ -35,13 +35,19 @@ export class MessageService {
       type: 'NEW_MESSAGE',
       recipientIds: recipientIds,
       payload: {
-        content,
-        sender: {
-          id: user.id,
-          name: user.name,
-          surname: user.surname,
+        channel: {
+          id: channel.id,
         },
-        created_at: message.created_at.toISOString(),
+        message: {
+          id: message.id,
+          content: message.content,
+          created_at: message.created_at.toISOString(),
+          sender: {
+            id: user.id,
+            name: user.name,
+            surname: user.surname,
+          },
+        },
       },
     });
 
