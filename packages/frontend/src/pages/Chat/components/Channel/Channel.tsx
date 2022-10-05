@@ -27,7 +27,7 @@ export default function Channel({ channel }: ChannelProps) {
   const messageListEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     messageListEndRef.current?.scrollIntoView({ behavior: 'auto' });
-  });
+  }, [messages]);
 
   return (
     <Flex h="100%" direction="column">

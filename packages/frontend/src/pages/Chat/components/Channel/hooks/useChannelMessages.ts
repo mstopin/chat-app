@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useStore } from '../../../../../store';
 import { Channel } from '../../../../../types';
@@ -15,9 +15,12 @@ export default function useChannelMessages(channel: Channel) {
     }
   }, [messages, fetchMessagesForChannel]);
 
-  return {
-    data: messages?.data ?? null,
-    error: messages?.error ?? null,
-    isLoading: messages?.isLoading ?? false,
-  };
+  return useMemo(
+    () => ({
+      data: messages?.data ?? null,
+      error: messages?.error ?? null,
+      isLoading: messages?.isLoading ?? false,
+    }),
+    [messages]
+  );
 }
