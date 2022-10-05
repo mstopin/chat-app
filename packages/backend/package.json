@@ -40,8 +40,8 @@
   "scripts": {
     "prebuild": "rimraf dist tsconfig.tsbuildinfo",
     "build": "tsc",
-    "start": "node dist/main",
-    "start:dev": "nest start --watch -p tsconfig.json",
+    "start": "TZ=UTC node dist/main",
+    "start:dev": "TZ=UTC nest start --watch -p tsconfig.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "typeorm": "typeorm-ts-node-commonjs"
