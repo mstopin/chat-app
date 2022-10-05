@@ -28,7 +28,7 @@ export function useDateDividedMessages(messages: Message[]) {
 
       if (!lastMessage || shouldDivideMessages(message, lastMessage)) {
         dateDividedMessages.push({
-          date: dayjs(message.created_at).format('DD.MM.YYYY HH:mm:ss'),
+          date: dayjs(message.created_at).format('DD.MM.YYYY HH:mm'),
           messages: [message],
         });
       } else {

@@ -30,7 +30,7 @@ export default function Message({ sender, content, created_at }: MessageProps) {
   const justifyContent = sender ? 'start' : 'end';
   const tooltipPlacement = sender ? 'right' : 'left';
 
-  const formattedCreatedAt = dayjs(created_at).format('HH:mm:ss');
+  const formattedCreatedAt = dayjs(created_at).format('HH:mm');
 
   return (
     <Box mb={2} _last={{ mb: 0 }}>
