@@ -6,22 +6,33 @@ import { MockType } from '../../../common/tests/MockType';
 
 import { Channel } from '../../channel/entities/Channel';
 import { User } from '../../user/entities/User';
+import { EventService } from '../../event/services/EventService';
 
 import { Message } from '../entities/Message';
 
 import { MessageService } from './MessageService';
+import { NewMessageEvent } from '../events/NewMessageEvent';
 
 let users: [User];
 let channels: [Channel];
 
 type MessageRepositoryMock = MockType<Repository<Message>>;
+type EventServiceMock = MockType<EventService>;
 
 const createMessageRepositoryMock: () => MessageRepositoryMock = () => ({
-  save: jest.fn((data) => data),
+  save: jest.fn((data) => ({
+    ...data,
+    created_at: new Date(),
+  })),
+});
+
+const createEventServiceMock: () => EventServiceMock = () => ({
+  publish: jest.fn(),
 });
 
 describe('MessageService', () => {
   let messageRepositoryMock: MessageRepositoryMock;
+  let eventServiceMock: EventServiceMock;
   let messageService: MessageService;
 
   beforeEach(async () => {
@@ -30,10 +41,15 @@ describe('MessageService', () => {
       new Channel('channel-id-1', users[0], 'name', 'password', [], []),
     ];
     messageRepositoryMock = createMessageRepositoryMock();
+    eventServiceMock = createEventServiceMock();
 
     const moduleRef = await Test.createTestingModule({
       providers: [
         MessageService,
+        {
+          provide: EventService,
+          useValue: eventServiceMock,
+        },
         {
           provide: getRepositoryToken(Message),
           useValue: messageRepositoryMock,
@@ -70,6 +86,15 @@ describe('MessageService', () => {
         channel: channels[0],
         content: 'content',
       });
+    });
+
+    it('publishes event', async () => {
+      await createMessage();
+
+      expect(eventServiceMock.publish).toHaveBeenCalledTimes(1);
+      expect(eventServiceMock.publish?.mock.calls[0][0]).toBeInstanceOf(
+        NewMessageEvent
+      );
     });
   });
 });
