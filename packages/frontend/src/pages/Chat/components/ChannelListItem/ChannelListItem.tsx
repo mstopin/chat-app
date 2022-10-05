@@ -22,7 +22,7 @@ export default function ChannelListItem({
 
   const isSelected = paramChannelId === channel.id;
 
-  const numberMembers = channel.members.length + 1;
+  const numberMembers = channel.members.length + (channel.deleted ? 0 : 1);
   const ownerText =
     channel.owner.id === user.id
       ? 'You'

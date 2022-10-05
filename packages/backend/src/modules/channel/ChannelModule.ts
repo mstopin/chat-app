@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserModule } from '../user';
 import { MessageModule } from '../message';
+import { EventModule } from '../event';
 import { Message } from '../message/entities/Message';
 
 import { Channel } from './entities/Channel';
@@ -16,6 +17,7 @@ import { ChannelMessageService } from './services/ChannelMessageService';
     TypeOrmModule.forFeature([Channel, Message]),
     UserModule,
     MessageModule,
+    EventModule,
   ],
   controllers: [ChannelController, ChannelMessageController],
   providers: [ChannelService, ChannelMessageService],

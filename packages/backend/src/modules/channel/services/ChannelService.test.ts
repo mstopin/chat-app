@@ -10,21 +10,28 @@ import { MockType } from '../../../common/tests/MockType';
 
 import { User } from '../../user/entities/User';
 import { UserService } from '../../user/services/UserService';
+import { EventService } from '../../event/services/EventService';
 
 import { Channel } from '../entities/Channel';
 
 import { ChannelService } from './ChannelService';
+import { ChannelDeletedEvent } from '../events/ChannelDeletedEvent';
 
 let users: User[];
 let channels: Channel[];
 
 type UserServiceMock = MockType<UserService>;
+type EventServiceMock = MockType<EventService>;
 type ChannelRepositoryMock = MockType<Repository<Channel>>;
 
 const createUserServiceMock: () => UserServiceMock = () => ({
   findById: jest.fn((id: string) => {
     return users.find((u) => u.id === id) ?? null;
   }),
+});
+
+const createEventServiceMock: () => EventServiceMock = () => ({
+  publish: jest.fn(),
 });
 
 const createChannelRepositoryMock: () => ChannelRepositoryMock = () => {
@@ -68,6 +75,7 @@ const createChannelRepositoryMock: () => ChannelRepositoryMock = () => {
 describe('ChannelService', () => {
   let userServiceMock: UserServiceMock;
   let channelRepositoryMock: ChannelRepositoryMock;
+  let eventServiceMock: EventServiceMock;
   let hashingService: HashingService;
   let channelService: ChannelService;
 
@@ -91,6 +99,7 @@ describe('ChannelService', () => {
     ];
 
     userServiceMock = createUserServiceMock();
+    eventServiceMock = createEventServiceMock();
     channelRepositoryMock = createChannelRepositoryMock();
     hashingService = new PassthroughHashingService();
 
@@ -99,6 +108,7 @@ describe('ChannelService', () => {
         ChannelService,
         { provide: UserService, useValue: userServiceMock },
         { provide: HashingService, useValue: hashingService },
+        { provide: EventService, useValue: eventServiceMock },
         {
           provide: getRepositoryToken(Channel),
           useValue: channelRepositoryMock,
@@ -245,6 +255,15 @@ describe('ChannelService', () => {
       await expect(async () => {
         await deleteChannel('user-id-2', 'channel-id-1');
       }).rejects.toThrow('You do not own this channel');
+    });
+
+    it('publishes channel deleted event', async () => {
+      await deleteChannel('user-id-1', 'channel-id-2');
+
+      expect(eventServiceMock.publish).toHaveBeenCalledTimes(1);
+      expect(eventServiceMock.publish?.mock.calls[0][0]).toBeInstanceOf(
+        ChannelDeletedEvent
+      );
     });
   });
 

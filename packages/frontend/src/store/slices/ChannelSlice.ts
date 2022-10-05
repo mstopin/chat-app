@@ -14,6 +14,7 @@ export interface ChannelSlice {
   deleteChannel: (channel: Channel) => void;
   joinChannel: (channel: Channel, user: User) => void;
   leaveChannel: (channel: Channel, user: User) => void;
+  markChannelAsDeleted: (channel: Channel) => void;
 }
 
 export const createChannelSlice: StateCreator<
@@ -66,7 +67,7 @@ export const createChannelSlice: StateCreator<
     const updatedChannels = channels.map((c) => {
       if (c.id !== channel.id) return c;
       return {
-        ...channel,
+        ...c,
         members: [...channel.members, user],
       };
     });
@@ -78,9 +79,21 @@ export const createChannelSlice: StateCreator<
     const updatedChannels = channels.map((c) => {
       if (c.id !== channel.id) return c;
       return {
-        ...channel,
+        ...c,
         members: channel.members.filter((m) => m.id !== user.id),
       } as Channel;
+    });
+    set({ channels: { ...get().channels, data: updatedChannels } });
+  },
+  markChannelAsDeleted: (channel: Channel) => {
+    if (!get().channels.data) return;
+    const channels = get().channels.data!;
+    const updatedChannels = channels.map((c) => {
+      if (c.id !== channel.id) return c;
+      return {
+        ...c,
+        deleted: true,
+      };
     });
     set({ channels: { ...get().channels, data: updatedChannels } });
   },

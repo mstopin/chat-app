@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { HashingService } from '../../../common/modules/HashingModule';
 
 import { UserService } from '../../user/services/UserService';
+import { EventService } from '../../event/services/EventService';
 
 import { Channel } from '../entities/Channel';
 
@@ -17,13 +18,15 @@ import { CreateChannelDTO } from './dtos/CreateChannelDTO';
 import { DeleteChannelDTO } from './dtos/DeleteChannelDTO';
 import { JoinChannelDTO } from './dtos/JoinChannelDTO';
 import { LeaveChannelDTO } from './dtos/LeaveChannelDTO';
+import { ChannelDeletedEvent } from '../events/ChannelDeletedEvent';
 
 @Injectable()
 export class ChannelService extends BaseChannelService {
   constructor(
     @InjectRepository(Channel) channelRepository: Repository<Channel>,
     userService: UserService,
-    private hashingService: HashingService
+    private hashingService: HashingService,
+    private eventService: EventService
   ) {
     super(channelRepository, userService);
   }
@@ -70,11 +73,12 @@ export class ChannelService extends BaseChannelService {
   async delete(deleteChannelDTO: DeleteChannelDTO) {
     const { ownerId, channelId } = deleteChannelDTO;
     const owner = await this.findUserById(ownerId);
-    const channel = await this.findChannelById(channelId, false, true);
+    const channel = await this.findChannelById(channelId, false, true, true);
     if (owner.id !== channel.owner.id) {
       throw new ForbiddenException('You do not own this channel');
     }
     await this.channelRepository.softDelete({ id: channelId });
+    this.eventService.publish(new ChannelDeletedEvent(channel));
   }
 
   async join(joinChannelDTO: JoinChannelDTO) {

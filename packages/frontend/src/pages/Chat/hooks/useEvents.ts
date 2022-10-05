@@ -22,11 +22,21 @@ interface NewMessageEvent {
   };
 }
 
-type Event = NewMessageEvent;
+interface ChannelDeletedEvent {
+  type: 'CHANNEL_DELETED';
+  payload: {
+    channel: {
+      id: string;
+    };
+  };
+}
+
+type Event = NewMessageEvent | ChannelDeletedEvent;
 
 export function useEvents() {
   const channels = useStore((state) => state.channels);
   const addMessageToChannel = useStore((state) => state.addMessageToChannel);
+  const markChannelAsDeleted = useStore((state) => state.markChannelAsDeleted);
 
   const websocket = useRef<WebSocket | null>(null);
 
@@ -44,6 +54,15 @@ export function useEvents() {
               ...event.payload.message,
               created_at: new Date(event.payload.message.created_at),
             });
+          }
+        }
+
+        if (event.type === 'CHANNEL_DELETED') {
+          const channel = channels.data?.find(
+            (c) => c.id === event.payload.channel.id
+          );
+          if (channel) {
+            markChannelAsDeleted(channel);
           }
         }
       };
