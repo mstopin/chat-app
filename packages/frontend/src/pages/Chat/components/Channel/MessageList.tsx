@@ -27,6 +27,7 @@ export default function MessageList({ messages }: MessageListProps) {
             {ddm.messages.map((m) => (
               <Message
                 content={m.content}
+                created_at={m.created_at}
                 sender={m.sender.id !== user.id ? m.sender : null}
                 key={m.id}
               />
