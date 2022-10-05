@@ -28,10 +28,37 @@ const createUserServiceMock: () => UserServiceMock = () => ({
 });
 
 const createChannelRepositoryMock: () => ChannelRepositoryMock = () => {
+  interface FindParams {
+    where?: {
+      members?: {
+        id?: string;
+      };
+    };
+    withDeleted?: boolean;
+  }
+
+  type FindOneParams = FindParams & {
+    where: {
+      id: string;
+    };
+  };
+
   return {
-    find: jest.fn(() => channels),
-    findOne: jest.fn(({ where: { id } }: { where: { id: string } }) => {
-      return channels.find((c) => c.id === id) ?? null;
+    find: jest.fn(({ where, withDeleted }: FindParams) => {
+      return channels
+        .filter((c) => (withDeleted ? true : !c.deleted_at))
+        .filter((c) =>
+          where?.members?.id
+            ? !!c.members.find((m) => m.id === where!.members!.id)
+            : true
+        );
+    }),
+    findOne: jest.fn(({ where, withDeleted }: FindOneParams) => {
+      return (
+        channels
+          .filter((c) => (withDeleted ? true : !c.deleted_at))
+          .find((c) => c.id === where.id) ?? null
+      );
     }),
     save: jest.fn((data) => data),
     softDelete: jest.fn(),
@@ -52,6 +79,15 @@ describe('ChannelService', () => {
     channels = [
       new Channel('channel-id-1', users[0], 'name-1', null, [], []),
       new Channel('channel-id-2', users[0], 'name-2', 'password-2', [], []),
+      new Channel(
+        'channel-id-3',
+        users[0],
+        'name-3',
+        null,
+        [users[1]!],
+        [],
+        new Date()
+      ),
     ];
 
     userServiceMock = createUserServiceMock();
@@ -74,47 +110,28 @@ describe('ChannelService', () => {
   });
 
   describe('findAll', () => {
-    const createExpectedCallObject = (
-      withOwner: boolean,
-      withMembers: boolean
-    ) => ({
-      relations: {
-        owner: !!withOwner,
-        members: !!withMembers,
-      },
-    });
-
-    it('returns all channels', async () => {
+    it('returns not deleted channels', async () => {
       const foundChannels = await channelService.findAll();
 
-      expect(foundChannels).toBe(channels);
-    });
-
-    it('loads channels without relations', async () => {
-      await channelService.findAll({});
-
-      expect(channelRepositoryMock.find).toHaveBeenCalledTimes(1);
-      expect(channelRepositoryMock.find).toHaveBeenCalledWith(
-        createExpectedCallObject(false, false)
+      expect(foundChannels).toStrictEqual(
+        channels.filter((c) => !c.deleted_at)
       );
     });
+  });
 
-    it('loads channels with owner relation', async () => {
-      await channelService.findAll({ withOwner: true });
+  describe('findAllDeletedAndAccessibleForUser', () => {
+    it('returns channels for members of deleted channels', async () => {
+      const foundChannels =
+        await channelService.findAllDeletedAndAccessibleForUser('user-id-2');
 
-      expect(channelRepositoryMock.find).toHaveBeenCalledTimes(1);
-      expect(channelRepositoryMock.find).toHaveBeenCalledWith(
-        createExpectedCallObject(true, false)
-      );
+      expect(foundChannels).toStrictEqual([channels[2]]);
     });
 
-    it('loads channels with members relation', async () => {
-      await channelService.findAll({ withMembers: true });
+    it('does not return channels for owners of deleted channels', async () => {
+      const foundChannels =
+        await channelService.findAllDeletedAndAccessibleForUser('user-id-3');
 
-      expect(channelRepositoryMock.find).toHaveBeenCalledTimes(1);
-      expect(channelRepositoryMock.find).toHaveBeenCalledWith(
-        createExpectedCallObject(false, true)
-      );
+      expect(foundChannels).toStrictEqual([]);
     });
   });
 
@@ -205,12 +222,13 @@ describe('ChannelService', () => {
         where: {
           id: 'channel-id-1',
         },
+        withDeleted: false,
       });
     });
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await deleteChannel('user-id-1', 'channel-id-3');
+        await deleteChannel('user-id-1', 'channel-id-4');
       }).rejects.toThrow('Channel does not exist');
     });
 
@@ -269,12 +287,13 @@ describe('ChannelService', () => {
         where: {
           id: 'channel-id-1',
         },
+        withDeleted: true,
       });
     });
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await joinChannel('user-id-2', 'channel-id-3', null);
+        await joinChannel('user-id-2', 'channel-id-4', null);
       }).rejects.toThrow('Channel does not exist');
     });
 
@@ -321,6 +340,12 @@ describe('ChannelService', () => {
         await joinChannel('user-id-2', 'channel-id-2', 'password-3');
       }).rejects.toThrow('Invalid password');
     });
+
+    it('throws if joining deleted channel', async () => {
+      await expect(async () => {
+        await joinChannel('user-id-2', 'channel-id-3', null);
+      }).rejects.toThrow('Channel has been deleted');
+    });
   });
 
   describe('leave', () => {
@@ -361,12 +386,13 @@ describe('ChannelService', () => {
         where: {
           id: 'channel-id-1',
         },
+        withDeleted: true,
       });
     });
 
     it('throws if channel does not exist', async () => {
       await expect(async () => {
-        await leaveChannel('user-id-2', 'channel-id-3');
+        await leaveChannel('user-id-2', 'channel-id-4');
       }).rejects.toThrow('Channel does not exist');
     });
 
@@ -394,6 +420,22 @@ describe('ChannelService', () => {
       }).rejects.toThrow(
         'You cannot leave your own channel. Delete it instead.'
       );
+    });
+
+    it('throws if owner tries to leave their own deleted channel', async () => {
+      await expect(async () => {
+        await leaveChannel('user-id-1', 'channel-id-3');
+      }).rejects.toThrow('Channel has been deleted.');
+    });
+
+    it('removes user from deleted channel', async () => {
+      await leaveChannel('user-id-2', 'channel-id-3');
+
+      expect(channelRepositoryMock.save).toHaveBeenCalledTimes(1);
+      expect(channelRepositoryMock.save).toHaveBeenCalledWith({
+        ...channels[2],
+        members: [],
+      });
     });
   });
 });

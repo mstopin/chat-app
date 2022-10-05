@@ -23,7 +23,8 @@ export class Channel {
     name?: string,
     password?: string | null,
     members?: User[],
-    messages?: Message[]
+    messages?: Message[],
+    deleted_at?: Date
   ) {
     this.id = id as string;
     this.owner = owner as User;
@@ -33,7 +34,7 @@ export class Channel {
     this.messages = messages as Message[];
     this.created_at = new Date();
     this.updated_at = null;
-    this.deleted_at = null;
+    this.deleted_at = deleted_at as Date;
   }
 
   @PrimaryGeneratedColumn('uuid')

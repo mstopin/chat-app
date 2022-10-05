@@ -21,6 +21,7 @@ export abstract class BaseChannelService {
 
   protected async findChannelById(
     channelId: string,
+    withDeleted = false,
     loadOwner = false,
     loadMembers = false,
     loadMessages = false
@@ -34,23 +35,11 @@ export abstract class BaseChannelService {
       where: {
         id: channelId,
       },
+      withDeleted,
     });
     if (!channel) {
       throw new NotFoundException('Channel does not exist');
     }
     return channel;
-  }
-
-  protected async findUserAndChannelById(
-    userId: string,
-    channelId: string,
-    loadOwner = false,
-    loadMembers = false,
-    loadMessages = false
-  ) {
-    return await Promise.all([
-      this.findUserById(userId),
-      this.findChannelById(channelId, loadOwner, loadMembers, loadMessages),
-    ]);
   }
 }

@@ -18,11 +18,6 @@ import { DeleteChannelDTO } from './dtos/DeleteChannelDTO';
 import { JoinChannelDTO } from './dtos/JoinChannelDTO';
 import { LeaveChannelDTO } from './dtos/LeaveChannelDTO';
 
-interface FindAllParams {
-  withOwner?: boolean;
-  withMembers?: boolean;
-}
-
 @Injectable()
 export class ChannelService extends BaseChannelService {
   constructor(
@@ -33,12 +28,27 @@ export class ChannelService extends BaseChannelService {
     super(channelRepository, userService);
   }
 
-  async findAll(params: FindAllParams = {}) {
+  async findAll() {
     return await this.channelRepository.find({
       relations: {
-        owner: !!params.withOwner,
-        members: !!params.withMembers,
+        owner: true,
+        members: true,
       },
+    });
+  }
+
+  async findAllDeletedAndAccessibleForUser(userId: string) {
+    return await this.channelRepository.find({
+      relations: {
+        owner: true,
+        members: true,
+      },
+      where: {
+        members: {
+          id: userId,
+        },
+      },
+      withDeleted: true,
     });
   }
 
@@ -59,12 +69,8 @@ export class ChannelService extends BaseChannelService {
 
   async delete(deleteChannelDTO: DeleteChannelDTO) {
     const { ownerId, channelId } = deleteChannelDTO;
-    const [owner, channel] = await this.findUserAndChannelById(
-      ownerId,
-      channelId,
-      true,
-      false
-    );
+    const owner = await this.findUserById(ownerId);
+    const channel = await this.findChannelById(channelId, false, true);
     if (owner.id !== channel.owner.id) {
       throw new ForbiddenException('You do not own this channel');
     }
@@ -73,12 +79,11 @@ export class ChannelService extends BaseChannelService {
 
   async join(joinChannelDTO: JoinChannelDTO) {
     const { userId, channelId, password } = joinChannelDTO;
-    const [user, channel] = await this.findUserAndChannelById(
-      userId,
-      channelId,
-      true,
-      true
-    );
+    const user = await this.findUserById(userId);
+    const channel = await this.findChannelById(channelId, true, true, true);
+    if (channel.deleted_at) {
+      throw new BadRequestException('Channel has been deleted.');
+    }
     if (user.id === channel.owner.id) {
       throw new BadRequestException('You cannot join your own channel');
     }
@@ -99,12 +104,11 @@ export class ChannelService extends BaseChannelService {
 
   async leave(leaveChannelDTO: LeaveChannelDTO) {
     const { userId, channelId } = leaveChannelDTO;
-    const [user, channel] = await this.findUserAndChannelById(
-      userId,
-      channelId,
-      true,
-      true
-    );
+    const user = await this.findUserById(userId);
+    const channel = await this.findChannelById(channelId, true, true, true);
+    if (channel.deleted_at && user.id === channel.owner.id) {
+      throw new BadRequestException('Channel has been deleted.');
+    }
     if (user.id === channel.owner.id) {
       throw new BadRequestException(
         'You cannot leave your own channel. Delete it instead.'

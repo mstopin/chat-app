@@ -32,10 +32,37 @@ const createMessageServiceMock: () => MessageServiceMock = () => ({
 });
 
 const createChannelRepositoryMock: () => ChannelRepositoryMock = () => {
+  interface FindParams {
+    where?: {
+      members?: {
+        id?: string;
+      };
+    };
+    withDeleted?: boolean;
+  }
+
+  type FindOneParams = FindParams & {
+    where: {
+      id: string;
+    };
+  };
+
   return {
-    find: jest.fn(() => channels),
-    findOne: jest.fn(({ where: { id } }: { where: { id: string } }) => {
-      return channels.find((c) => c.id === id) ?? null;
+    find: jest.fn(({ where, withDeleted }: FindParams) => {
+      return channels
+        .filter((c) => (withDeleted ? true : !c.deleted_at))
+        .filter((c) =>
+          where?.members?.id
+            ? !!c.members.find((m) => m.id === where!.members!.id)
+            : true
+        );
+    }),
+    findOne: jest.fn(({ where, withDeleted }: FindOneParams) => {
+      return (
+        channels
+          .filter((c) => (withDeleted ? true : !c.deleted_at))
+          .find((c) => c.id === where.id) ?? null
+      );
     }),
     save: jest.fn((data) => data),
     softDelete: jest.fn(),
@@ -94,6 +121,7 @@ describe('ChannelMessageService', () => {
 
   const assertChecksIfChannelExists = (
     channelId: string,
+    withDeleted = false,
     withMessages = false
   ) => {
     expect(channelRepositoryMock.findOne).toHaveBeenCalledTimes(1);
@@ -106,6 +134,7 @@ describe('ChannelMessageService', () => {
       where: {
         id: channelId,
       },
+      withDeleted,
     });
   };
 
@@ -130,7 +159,7 @@ describe('ChannelMessageService', () => {
 
     it('checks if channel exists', async () => {
       await getAll('user-id-1');
-      assertChecksIfChannelExists('channel-id-1', true);
+      assertChecksIfChannelExists('channel-id-1', true, true);
     });
 
     it('throws if user does not exist', async () => {

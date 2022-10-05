@@ -27,10 +27,14 @@ export class ChannelController {
 
   @Get()
   async getChannels() {
-    const channels = await this.channelService.findAll({
-      withOwner: true,
-      withMembers: true,
-    });
+    const channels = await this.channelService.findAll();
+    return channels.map((channel) => ChannelResponse.from(channel));
+  }
+
+  @Get('/deleted')
+  async getChannelDeletedAndAccessibleForUser(@UserId() userId: string) {
+    const channels =
+      await this.channelService.findAllDeletedAndAccessibleForUser(userId);
     return channels.map((channel) => ChannelResponse.from(channel));
   }
 

@@ -32,9 +32,10 @@ export class ChannelMessageService extends BaseChannelService {
 
   async getAll(getAllMessagesDTO: GetAllMessagesDTO) {
     const { userId, channelId } = getAllMessagesDTO;
-    const [user, channel] = await this.findUserAndChannelById(
-      userId,
+    const user = await this.findUserById(userId);
+    const channel = await this.findChannelById(
       channelId,
+      true,
       true,
       true,
       true
@@ -47,12 +48,8 @@ export class ChannelMessageService extends BaseChannelService {
 
   async send(sendMessageDTO: SendMessageDTO) {
     const { userId, channelId, content } = sendMessageDTO;
-    const [user, channel] = await this.findUserAndChannelById(
-      userId,
-      channelId,
-      true,
-      true
-    );
+    const user = await this.findUserById(userId);
+    const channel = await this.findChannelById(channelId, false, true, true);
     if (!this.isMemberOrOwner(user, channel)) {
       throw new BadRequestException('You are not a member of this channel');
     }
