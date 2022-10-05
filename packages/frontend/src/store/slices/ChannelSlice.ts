@@ -30,8 +30,19 @@ export const createChannelSlice: StateCreator<
   fetchChannels: async () => {
     try {
       set({ channels: { data: null, error: null, isLoading: true } });
-      const response = await axios.get('/api/channels');
-      const data = response.data as Channel[];
+      const [channelsResponse, deletedChannelsResponse] = await Promise.all([
+        axios.get('/api/channels'),
+        axios.get('/api/channels/deleted'),
+      ]);
+      const channels = channelsResponse.data as Channel[];
+      const deletedChannels = deletedChannelsResponse.data as Channel[];
+      const data = [
+        ...channels,
+        ...deletedChannels.map((c) => ({
+          ...c,
+          deleted: true,
+        })),
+      ];
       set({ channels: { data, error: null, isLoading: false } });
     } catch (e: any) {
       set({ channels: { data: null, error: e.message, isLoading: false } });

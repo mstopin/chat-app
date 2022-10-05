@@ -6,4 +6,5 @@ export interface Channel {
   hasPassword: boolean;
   owner: User;
   members: User[];
+  deleted?: boolean;
 }

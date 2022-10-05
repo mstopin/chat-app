@@ -44,23 +44,29 @@ export default function Channel({ channel }: ChannelProps) {
       </Box>
       <Box borderTop="1px solid #BDBDBD">
         <Box p={2}>
-          <Flex>
-            <Input
-              mr={4}
-              placeholder="Message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button
-              flex="0 1 100px"
-              color="white"
-              bg="#2F80ED"
-              sx={{ '&:hover': { bg: '#1369DE !important' } }}
-              onClick={onSend}
-            >
-              Send
-            </Button>
-          </Flex>
+          {!channel.deleted ? (
+            <Flex>
+              <Input
+                mr={4}
+                placeholder="Message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <Button
+                flex="0 1 100px"
+                color="white"
+                bg="#2F80ED"
+                sx={{ '&:hover': { bg: '#1369DE !important' } }}
+                onClick={onSend}
+              >
+                Send
+              </Button>
+            </Flex>
+          ) : (
+            <Text p={2} textAlign="center" fontWeight="medium">
+              Channel has been deleted. You can no longer send new messages.
+            </Text>
+          )}
         </Box>
       </Box>
     </Flex>
