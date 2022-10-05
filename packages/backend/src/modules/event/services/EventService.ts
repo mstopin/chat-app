@@ -10,6 +10,7 @@ import { Event } from '../events/Event';
 @Injectable()
 export class EventService {
   private static KEY_TTL = 1800;
+  private static EVENT_CHANNEL = 'events';
 
   private redisClient: RedisClient;
 
@@ -41,7 +42,6 @@ export class EventService {
   }
 
   async publish(event: Event) {
-    const CHANNEL_NAME = 'events';
-    this.redisClient.publish(CHANNEL_NAME, JSON.stringify(event));
+    this.redisClient.publish(EventService.EVENT_CHANNEL, event.serialize());
   }
 }
