@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=chat-app
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+  haproxy:
+    image: haproxy:alpine
+    volumes:
+      - ./docker/haproxy/haproxy.dev.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    network_mode: 'host'
+
+volumes:
+  postgres:
+  redis:
