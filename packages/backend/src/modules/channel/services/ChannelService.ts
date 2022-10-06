@@ -73,7 +73,7 @@ export class ChannelService extends BaseChannelService {
   async delete(deleteChannelDTO: DeleteChannelDTO) {
     const { ownerId, channelId } = deleteChannelDTO;
     const owner = await this.findUserById(ownerId);
-    const channel = await this.findChannelById(channelId, false, true, true);
+    const channel = await this.findChannelById(channelId, false, true, false);
     if (owner.id !== channel.owner.id) {
       throw new ForbiddenException('You do not own this channel');
     }
