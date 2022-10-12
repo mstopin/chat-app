@@ -5,10 +5,8 @@ services:
     image: postgres:alpine
     volumes:
       - postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=chat-app
+    env_file:
+      - ./docker/env/postgres.env
 
   redis:
     image: redis:alpine
