@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Flex, Box, Center, Button } from '@chakra-ui/react';
 
 import { Loader } from '../../../../components/Loader';
+import { useUser } from '../../../../hooks/useUser';
 
 import { ChannelFilter } from '../../types';
 import { ChannelListItem } from '../ChannelListItem';
@@ -12,6 +13,7 @@ import useFilteredChannels from './hooks/useFilteredChannels';
 import useCreateChannel from './hooks/useCreateChannel';
 
 export default function ChannelList() {
+  const { logOut } = useUser();
   const { channels, isLoading, filter, setFilter } = useFilteredChannels();
   const {
     isLoading: isCreatingChannel,
@@ -46,7 +48,7 @@ export default function ChannelList() {
                 ))}
               </Box>
               <Box p={2} borderTop="1px solid #BDBDBD">
-                <Flex justifyContent="start">
+                <Flex justifyContent="space-between">
                   <Button
                     color="white"
                     bg="#2F80ED"
@@ -55,6 +57,7 @@ export default function ChannelList() {
                   >
                     Create channel
                   </Button>
+                  <Button onClick={logOut}>Log out</Button>
                 </Flex>
               </Box>
             </Flex>
