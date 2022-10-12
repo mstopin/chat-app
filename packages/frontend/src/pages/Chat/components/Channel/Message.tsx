@@ -5,7 +5,8 @@ interface MessageProps {
   sender: {
     name: string;
     surname: string;
-  } | null;
+  };
+  sentByCurrentUser: boolean;
   content: string;
   created_at: Date;
 }
@@ -26,28 +27,37 @@ function SenderInitialsCircle({ name, surname }: SenderInitialsCircleProps) {
   );
 }
 
-export default function Message({ sender, content, created_at }: MessageProps) {
-  const justifyContent = sender ? 'start' : 'end';
-  const tooltipPlacement = sender ? 'right' : 'left';
-
+export default function Message({
+  sender,
+  content,
+  sentByCurrentUser,
+  created_at,
+}: MessageProps) {
+  const contentPosition = sentByCurrentUser ? 'end' : 'start';
+  const tooltipPlacement = sentByCurrentUser ? 'left' : 'right';
   const formattedCreatedAt = dayjs(created_at).format('HH:mm');
 
   return (
-    <Box mb={2} _last={{ mb: 0 }}>
-      <Flex justifyContent={justifyContent}>
-        <Tooltip label={formattedCreatedAt} placement={tooltipPlacement}>
-          <Flex>
-            {sender && (
-              <SenderInitialsCircle
-                name={sender.name}
-                surname={sender.surname}
-              />
-            )}
-            <Box py={1.5} px={3} bg="#F2F2F2" borderRadius="xl">
-              {content}
-            </Box>
-          </Flex>
-        </Tooltip>
+    <Box mb={3} _last={{ mb: 0 }}>
+      <Flex justifyContent={contentPosition}>
+        <Flex alignItems={contentPosition} direction="column">
+          <Text fontSize="small" color="gray.500" mb={1}>
+            {sender.name}&nbsp;{sender.surname}
+          </Text>
+          <Tooltip label={formattedCreatedAt} placement={tooltipPlacement}>
+            <Flex>
+              {sender && (
+                <SenderInitialsCircle
+                  name={sender.name}
+                  surname={sender.surname}
+                />
+              )}
+              <Box py={1.5} px={3} bg="#F2F2F2" borderRadius="xl">
+                {content}
+              </Box>
+            </Flex>
+          </Tooltip>
+        </Flex>
       </Flex>
     </Box>
   );

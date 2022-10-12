@@ -28,7 +28,8 @@ export default function MessageList({ messages }: MessageListProps) {
               <Message
                 content={m.content}
                 created_at={m.created_at}
-                sender={m.sender.id !== user.id ? m.sender : null}
+                sender={m.sender}
+                sentByCurrentUser={m.sender.id === user.id}
                 key={m.id}
               />
             ))}
