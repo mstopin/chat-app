@@ -37,18 +37,28 @@ Provides functionality to create accounts and then group chats (channels) to cha
 
 # Demo
 
-### Sign-up
+## Sign-up
 
 ![Sign up](./docs/sign-up.jpg)
-![Sign up with errors](./docs/sign-up-error.jpg)
-===
 
-### Channels
+## Sign-up with validation errors
+
+![Sign up with errors](./docs/sign-up-error.jpg)
+
+## Create channel
 
 ![Create channel](./docs/create-channel.jpg)
+
+## Join channel
+
 ![Join channel](./docs/join-channel.jpg)
-===
 
-### Messaging
+## Messaging
 
-# ![Messaging](./docs/messages.jpg)
+![Messaging](./docs/messages.jpg)
+
+# Usage
+
+# License
+
+MIT
