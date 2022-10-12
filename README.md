@@ -20,12 +20,14 @@ Provides functionality to create accounts and then group chats (channels) to cha
 
 ### Frontend
 
+- TypeScript
 - React
 - Chakra-UI
 - Zustand
 
 ### Backend
 
+- TypeScript
 - NestJS
 - TypeORM
 - WS
@@ -58,6 +60,29 @@ Provides functionality to create accounts and then group chats (channels) to cha
 ![Messaging](./docs/messages.jpg)
 
 # Usage
+
+To build and run this application you will need:
+
+- docker
+- docker-compose
+
+```bash
+# Clone this repository
+$ git clone https://github.com/mstopin/chat-app
+
+# Open the project directory
+$ cd chat-app
+
+# go to docker/env directory
+# rename *.example.env files to *.env
+# type in empty secrets
+
+# Build docker images
+$ docker-compose build
+
+# Run the app
+$ docker-compose up
+```
 
 # License
 
