@@ -226,7 +226,7 @@ describe('ChannelService', () => {
       expect(channelRepositoryMock.findOne).toHaveBeenCalledWith({
         relations: {
           owner: true,
-          members: false,
+          members: true,
           messages: false,
         },
         where: {
